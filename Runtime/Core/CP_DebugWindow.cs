@@ -34,25 +34,19 @@ namespace CobaPlatinum.DebugTools
 
         #endregion
 
-        [Header("UI")]
-
-        [SerializeField] private bool showDebugWindow = false;
+        [SerializeField] public bool showDebugWindow = false;
         [SerializeField] private Rect windowRect = new Rect(20, 20, 800, 50);
         [SerializeField] private int tabIndex = 0;
-
-        [Header("Console Messages")]
 
         [SerializeField] private int maxConsoleMessages = 200;
         [SerializeField] private Queue<string> consoleMessages = new Queue<string>();
 
-        [Header("Console Colors")]
         public static Color LOG_COLOR = Color.white;
         public static Color WARNING_COLOR = Color.yellow;
         public static Color ERROR_COLOR = Color.red;
         public static Color OBJECT_COLOR = Color.green;
         public static Color INPUT_COLOR = Color.cyan;
 
-        [Header("Console Tags")]
         public ConsoleTag UNITY_TAG = new ConsoleTag("UNITY", TextUtils.UnnormalizedColor(180, 0, 255));
         public ConsoleTag PLATINUM_CONSOLE_TAG = new ConsoleTag("CP CONSOLE", TextUtils.UnnormalizedColor(0, 165, 255));
 
@@ -227,7 +221,7 @@ namespace CobaPlatinum.DebugTools
             string newMessage = "";
 
             if (_consoleTag != null)
-                newMessage += "[" + TextUtils.ColoredText(_consoleTag.tag, _consoleTag.tagColor) + "]";
+                newMessage += "[" + TextUtils.ColoredText(_consoleTag.tagLabel, _consoleTag.tagColor) + "]";
 
             if (_messageType == LogType.Log)
             {
@@ -261,6 +255,21 @@ namespace CobaPlatinum.DebugTools
                 consoleMessages.Dequeue();
         }
 
+        public static void ConsoleLog(string _message)
+        {
+            Instance.LogConsoleMessage(_message, LogType.Log, Instance.PLATINUM_CONSOLE_TAG);
+        }
+
+        public static void ConsoleWarning(string _message)
+        {
+            Instance.LogConsoleMessage(_message, LogType.Warning, Instance.PLATINUM_CONSOLE_TAG);
+        }
+
+        public static void ConsoleError(string _message)
+        {
+            Instance.LogConsoleMessage(_message, LogType.Error, Instance.PLATINUM_CONSOLE_TAG);
+        }
+
         void LogTaglessConsoleMessage(string _message)
         {
             consoleMessages.Enqueue(_message);
@@ -269,19 +278,19 @@ namespace CobaPlatinum.DebugTools
                 consoleMessages.Dequeue();
         }
 
-        public static void LogMessage(UnityEngine.Object _myObj, object _msg)
+        public static void Log(UnityEngine.Object _myObj, object _msg)
         {
             Debug.Log(TextUtils.ColoredText(_myObj.GetType() + ".cs:" + _myObj.name, OBJECT_COLOR)
                 + TextUtils.ColoredText(" > ", Color.white) + _msg);
         }
 
-        public static void LogWarningMessage(UnityEngine.Object _myObj, object _msg)
+        public static void LogWarning(UnityEngine.Object _myObj, object _msg)
         {
             Debug.LogWarning(TextUtils.ColoredText(_myObj.GetType() + ".cs:" + _myObj.name, OBJECT_COLOR)
                 + TextUtils.ColoredText(" > ", Color.white) + _msg);
         }
 
-        public static void LogErrorMessage(UnityEngine.Object _myObj, object _msg)
+        public static void LogError(UnityEngine.Object _myObj, object _msg)
         {
             Debug.LogError(TextUtils.ColoredText(_myObj.GetType() + ".cs:" + _myObj.name, OBJECT_COLOR)
                 + TextUtils.ColoredText(" > ", Color.white) + _msg);
@@ -499,7 +508,7 @@ namespace CobaPlatinum.DebugTools
     [System.Serializable]
     public class ConsoleTag
     {
-        public string tag;
+        public string tagLabel;
         public Color tagColor;
 
         public ConsoleTag()
@@ -509,7 +518,7 @@ namespace CobaPlatinum.DebugTools
 
         public ConsoleTag(string _tag, Color _color)
         {
-            tag = _tag;
+            tagLabel = _tag;
             tagColor = _color;
         }
     }
