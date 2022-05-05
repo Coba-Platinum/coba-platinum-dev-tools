@@ -1,0 +1,16 @@
+{
+    "name": "cobaplatinum.debugtools.editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:15c292fb0bd1fe54085ee4b56218ae19"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

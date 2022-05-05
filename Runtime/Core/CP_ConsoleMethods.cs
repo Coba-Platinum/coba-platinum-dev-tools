@@ -6,14 +6,15 @@ using System.Reflection;
 
 using CobaPlatinum.DebugTools;
 using CobaPlatinum.DebugTools.Console;
+using CobaPlatinum.TextUtilities;
 
-public class PlatinumConsoleMethods
+public class CP_ConsoleMethods
 {
     public static List<PlatinumCommand> Commands { get; private set; } = new List<PlatinumCommand>();
     private static List<string> methodNames = new List<string>();
     public static int cachedSignatures = 0;
     public static int cachedAliases = 0;
-    public PlatinumConsoleMethods()
+    public CP_ConsoleMethods()
     {
         ReCacheMethods();
     }
@@ -35,9 +36,9 @@ public class PlatinumConsoleMethods
             AddObjectMethodsToTerminal(mono);
         }
 
-        PlatinumConsole.Instance.LogConsoleMessage("Platinum Console methods cached. Total commands cached: " + TextUtils.ColoredText(Commands.Count, Color.green), LogType.Log, PlatinumConsole.Instance.PLATINUM_CONSOLE_TAG);
-        PlatinumConsole.Instance.LogConsoleMessage("Platinum Console method signatures cached. Total signatures cached: " + TextUtils.ColoredText(cachedSignatures, Color.green), LogType.Log, PlatinumConsole.Instance.PLATINUM_CONSOLE_TAG);
-        PlatinumConsole.Instance.LogConsoleMessage("Platinum Console aliases cached. Total aliases cached: " + TextUtils.ColoredText(cachedAliases, Color.green), LogType.Log, PlatinumConsole.Instance.PLATINUM_CONSOLE_TAG);
+        CP_DebugWindow.Instance.LogConsoleMessage("CP Console methods cached. Total commands cached: " + TextUtils.ColoredText(Commands.Count, Color.green), LogType.Log, CP_DebugWindow.Instance.PLATINUM_CONSOLE_TAG);
+        CP_DebugWindow.Instance.LogConsoleMessage("CP Console method signatures cached. Total signatures cached: " + TextUtils.ColoredText(cachedSignatures, Color.green), LogType.Log, CP_DebugWindow.Instance.PLATINUM_CONSOLE_TAG);
+        CP_DebugWindow.Instance.LogConsoleMessage("CP Console aliases cached. Total aliases cached: " + TextUtils.ColoredText(cachedAliases, Color.green), LogType.Log, CP_DebugWindow.Instance.PLATINUM_CONSOLE_TAG);
     }
 
     public static void AddObjectMethodsToTerminal(MonoBehaviour mono)

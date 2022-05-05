@@ -7,14 +7,17 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 
 using CobaPlatinum.DebugTools.Console;
+using CobaPlatinum.TextUtilities;
 
 namespace CobaPlatinum.DebugTools
 {
-    public class PlatinumConsole : MonoBehaviour
+    public class CP_DebugWindow : MonoBehaviour
     {
+        private string version = "0.1.6";
+
         #region Singleton
 
-        public static PlatinumConsole Instance;
+        public static CP_DebugWindow Instance;
 
         private void Awake()
         {
@@ -34,12 +37,12 @@ namespace CobaPlatinum.DebugTools
         [Header("UI")]
 
         [SerializeField] private bool showDebugWindow = false;
-        [SerializeField] private Rect windowRect = new Rect(20, 20, 120, 50);
+        [SerializeField] private Rect windowRect = new Rect(20, 20, 800, 50);
         [SerializeField] private int tabIndex = 0;
 
         [Header("Console Messages")]
 
-        [SerializeField] private int maxConsoleMessages = 20;
+        [SerializeField] private int maxConsoleMessages = 200;
         [SerializeField] private Queue<string> consoleMessages = new Queue<string>();
 
         [Header("Console Colors")]
@@ -50,20 +53,20 @@ namespace CobaPlatinum.DebugTools
         public static Color INPUT_COLOR = Color.cyan;
 
         [Header("Console Tags")]
-        public ConsoleTag UNITY_TAG;
-        public ConsoleTag PLATINUM_CONSOLE_TAG;
+        public ConsoleTag UNITY_TAG = new ConsoleTag("UNITY", TextUtils.UnnormalizedColor(180, 0, 255));
+        public ConsoleTag PLATINUM_CONSOLE_TAG = new ConsoleTag("CP CONSOLE", TextUtils.UnnormalizedColor(0, 165, 255));
 
         private string consoleInput;
         private Vector2 scrollPosition = Vector2.zero;
         private bool autoScroll = true;
 
-        [SerializeField] private PlatinumConsoleMethods platinumConsoleMethods;
+        [SerializeField] private CP_ConsoleMethods platinumConsoleMethods;
 
         public void Initialize()
         {
             DontDestroyOnLoad(this);
 
-            platinumConsoleMethods = new PlatinumConsoleMethods();
+            platinumConsoleMethods = new CP_ConsoleMethods();
         }
 
         private void Start()
@@ -98,7 +101,7 @@ namespace CobaPlatinum.DebugTools
             if (showDebugWindow)
             {
                 // Register the window. Notice the 3rd parameter
-                windowRect = GUI.Window(0, windowRect, DrawDebugWindow, "Coba Platinum Debug Window v1.0");
+                windowRect = GUI.Window(0, windowRect, DrawDebugWindow, "Coba Platinum Debug Window v" + version);
             }
 
             if (Event.current.Equals(Event.KeyboardEvent("None")))
@@ -127,9 +130,13 @@ namespace CobaPlatinum.DebugTools
             {
                 tabIndex = 0;
             }
-            if (GUILayout.Button("Settings"))
+            if (GUILayout.Button("Exposed Variables"))
             {
                 tabIndex = 1;
+            }
+            if (GUILayout.Button("Settings"))
+            {
+                tabIndex = 2;
             }
             GUILayout.EndHorizontal();
 
@@ -139,6 +146,9 @@ namespace CobaPlatinum.DebugTools
                     DrawDebugConsole();
                     break;
                 case 1:
+                    DrawExposedVariables();
+                    break;
+                case 2:
                     DrawDebugSettings();
                     break;
                 default:
@@ -147,9 +157,19 @@ namespace CobaPlatinum.DebugTools
             }
         }
 
+        public void DrawExposedVariables()
+        {
+            GUI.Label(new Rect(10, 60, 800, 20), "Exposed Variables:");
+        }
+
         public void DrawDebugSettings()
         {
             GUI.Label(new Rect(10, 60, 800, 20), "Debug Window Settings:");
+        }
+
+        public void SetMaxConsoleMessages(int _maxMessages)
+        {
+            maxConsoleMessages = _maxMessages;
         }
 
         public void DrawDebugConsole()
@@ -178,7 +198,7 @@ namespace CobaPlatinum.DebugTools
             GUI.EndScrollView();
 
             GUI.SetNextControlName("DebugCommandField");
-            consoleInput = GUI.TextField(new Rect(10, Screen.height - 71, 610, 21), consoleInput);
+            consoleInput = GUI.TextField(new Rect(10, Screen.height - 71, windowRect.width - 190, 21), consoleInput);
 
             if (GUI.Button(new Rect(windowRect.width - 170, Screen.height - 71, 160, 21), "Send Command"))
             {
@@ -294,7 +314,7 @@ namespace CobaPlatinum.DebugTools
                 args = _command.Split(new char[] { ' ' }).ToList();
                 command = args[0].ToLower();
                 args.RemoveAt(0);
-                foreach (var method in PlatinumConsoleMethods.Commands)
+                foreach (var method in CP_ConsoleMethods.Commands)
                 {
                     if (method.IsAnAlias(command))
                     {
@@ -370,7 +390,7 @@ namespace CobaPlatinum.DebugTools
             LogTaglessConsoleMessage("------ Commands ------");
             LogTaglessConsoleMessage("{COMMAND FORMAT} - {COMMAND DESCRIPTION}  - Use \"help {command}\" for more info.");
 
-            foreach (var method in PlatinumConsoleMethods.Commands)
+            foreach (var method in CP_ConsoleMethods.Commands)
             {
                 LogTaglessConsoleMessage(TextUtils.ColoredText("\"" + method.commandSignatures[0] + "\"", INPUT_COLOR) + $" - {method.commandDescription}");
                 string aliases = "";
@@ -410,7 +430,7 @@ namespace CobaPlatinum.DebugTools
         [PlatinumCommand("Help", "Learn more about a specific command.")]
         public void Help(string command)
         {
-            foreach (var method in PlatinumConsoleMethods.Commands)
+            foreach (var method in CP_ConsoleMethods.Commands)
             {
                 if (method.IsAnAlias(command))
                 {
@@ -481,5 +501,16 @@ namespace CobaPlatinum.DebugTools
     {
         public string tag;
         public Color tagColor;
+
+        public ConsoleTag()
+        {
+
+        }
+
+        public ConsoleTag(string _tag, Color _color)
+        {
+            tag = _tag;
+            tagColor = _color;
+        }
     }
 }

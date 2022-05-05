@@ -1,13 +1,12 @@
 {
-	"name": "com.cobaplatinum.debugtools",
-	"version": "0.1.2",
-	"displayName": "Coba Platinum Debug Tools",
-	"description": "A robust set of debug tools that allows functionality such as an in-game debug console with commands, custom window menus, exposing variables, etc. for debugging a game.",
-	"author":
-	{
-		"name": "Coba Platinum",
-		"email": "cobaplatinum@gmail.com",
-		"url": "www.cobaplatinum.com"
-	},
-	"type": "tool"
+  "name": "com.cobaplatinum.debugtools",
+  "version": "0.1.6",
+  "displayName": "Coba Platinum Debug Tools",
+  "description": "A robust set of debug tools that allows functionality such as an in-game debug console with commands, custom window menus, exposing variables, etc. for debugging a game.",
+  "author": {
+    "name": "Coba Platinum",
+    "email": "cobaplatinum@gmail.com",
+    "url": "www.cobaplatinum.com"
+  },
+  "type": "tool"
 }
