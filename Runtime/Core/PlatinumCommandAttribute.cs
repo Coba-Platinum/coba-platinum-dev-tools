@@ -2,7 +2,7 @@ using UnityEngine;
 using System;
 
 
-namespace CobaPlatinum.DebugWindow.Console
+namespace CobaPlatinum.DebugTools.Console
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class PlatinumCommandAttribute : Attribute

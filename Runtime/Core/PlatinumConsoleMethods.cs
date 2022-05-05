@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-using CobaPlatinum.DebugWindow;
-using CobaPlatinum.DebugWindow.Console;
+using CobaPlatinum.DebugTools;
+using CobaPlatinum.DebugTools.Console;
 
 public class PlatinumConsoleMethods
 {

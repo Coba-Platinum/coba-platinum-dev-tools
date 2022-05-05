@@ -6,9 +6,9 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-using CobaPlatinum.DebugWindow.Console;
+using CobaPlatinum.DebugTools.Console;
 
-namespace CobaPlatinum.DebugWindow
+namespace CobaPlatinum.DebugTools
 {
     public class PlatinumConsole : MonoBehaviour
     {
