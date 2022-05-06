@@ -4,6 +4,7 @@ using System;
 
 using CobaPlatinum.TextUtilities;
 using CobaPlatinum.Utilities.Versioning;
+using System.IO;
 
 public class CP_PackageBuild : EditorWindow
 {
@@ -15,6 +16,8 @@ public class CP_PackageBuild : EditorWindow
     public string packageName = "";
 
     public int[] currentVersion;
+
+    public PackageManifestAsset manifestAsset;
 
     [MenuItem("Coba Platinum/Package Build")]
     public static void ShowWindow()
@@ -58,6 +61,10 @@ public class CP_PackageBuild : EditorWindow
         EditorGUILayout.BeginHorizontal("box");
         GUILayout.Label("PACKAGE MANIFEST", EditorStyles.largeLabel);
         EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginVertical("box");
+        manifestAsset = (PackageManifestAsset)EditorGUILayout.ObjectField("Package Manifest Asset", manifestAsset, typeof(PackageManifestAsset), false);
+        EditorGUILayout.EndVertical();
 
         EditorGUILayout.Space();
 
@@ -156,7 +163,8 @@ public class CP_PackageBuild : EditorWindow
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginVertical("box");
-        if(GUILayout.Button("Package Existing Build"))
+        EditorGUILayout.BeginHorizontal();
+        if(GUILayout.Button("Package Existing"))
         {
             PackageBuild();
         }
@@ -165,12 +173,38 @@ public class CP_PackageBuild : EditorWindow
         {
             PackageBuild();
         }
+        EditorGUILayout.EndHorizontal();
         EditorGUILayout.EndVertical();
     }
 
     private void PackageBuild()
     {
         VerifySettings();
+
+        string fullPackagePath = (packagePath + "\\" + packageName);
+
+        try
+        {
+            // Determine whether the directory exists.
+            if (Directory.Exists(fullPackagePath))
+            {
+                Debug.Log("That path exists already.");
+
+                // Delete the directory.
+                Directory.Delete(fullPackagePath, true);
+                Debug.Log(fullPackagePath + " was deleted successfully.");
+
+                return;
+            }
+
+            // Try to create the directory.
+            DirectoryInfo di = Directory.CreateDirectory(fullPackagePath);
+            Debug.Log(string.Format(di.FullName + " was created successfully at {0}.", Directory.GetCreationTime(fullPackagePath).ToString()));
+        }
+        catch (Exception e)
+        {
+            Debug.Log(string.Format("The process failed: {0}", e.ToString()));
+        }
     }
 
     private bool VerifySettings()
