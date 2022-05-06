@@ -15,7 +15,7 @@ namespace CobaPlatinum.Utilities.Versioning
 
         public static bool autoIncrement = true;
         public static bool devBuild = true;
-        public static VersionBuildType buildType = VersionBuildType.MAJOR;
+        public static VersionBuildType buildType = VersionBuildType.PATCH;
         public static VersionDevStage devStage = VersionDevStage.ALPHA;
 
         public void OnPreprocessBuild(BuildReport _report)
