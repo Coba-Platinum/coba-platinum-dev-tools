@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditorInternal;
 
 using CobaPlatinum.DebugTools;
+using CobaPlatinum.DebugTools.Console.DefaultCommands;
 
 [CustomEditor(typeof(CP_DebugWindow))]
 public class CP_DebugWindowEditor : Editor
@@ -145,6 +146,17 @@ public class CP_DebugWindowEditor : Editor
             }
 
             EditorGUILayout.Space();
+        }
+
+        EditorGUILayout.EndVertical();
+
+        EditorGUILayout.BeginVertical("box");
+        GUILayout.Label("Debug Console Commands", EditorStyles.boldLabel);
+
+        EditorGUILayout.Space();
+        if (GUILayout.Button("Add Default Commands"))
+        {
+            CP_DefaultCommands defaultCommandsComponent = ObjectFactory.AddComponent<CP_DefaultCommands>(targetObject.gameObject);
         }
 
         EditorGUILayout.EndVertical();

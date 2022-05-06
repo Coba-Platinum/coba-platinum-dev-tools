@@ -8,6 +8,7 @@ using UnityEngine;
 
 using CobaPlatinum.DebugTools.Console;
 using CobaPlatinum.TextUtilities;
+using CobaPlatinum.DebugTools.ExposedFields;
 
 namespace CobaPlatinum.DebugTools
 {
@@ -34,9 +35,9 @@ namespace CobaPlatinum.DebugTools
 
         #endregion
 
-        [SerializeField] public bool showDebugWindow = false;
+        [SerializeField][ExposedField("Debug Window Showing")] public bool showDebugWindow = false;
         [SerializeField] private Rect windowRect = new Rect(20, 20, 800, 50);
-        [SerializeField] private int tabIndex = 0;
+        [SerializeField][ExposedField()] private int tabIndex = 0;
 
         [SerializeField] private int maxConsoleMessages = 200;
         [SerializeField] private Queue<string> consoleMessages = new Queue<string>();
@@ -51,21 +52,29 @@ namespace CobaPlatinum.DebugTools
         public ConsoleTag PLATINUM_CONSOLE_TAG = new ConsoleTag("CP CONSOLE", TextUtils.UnnormalizedColor(0, 165, 255));
 
         private string consoleInput;
-        private Vector2 scrollPosition = Vector2.zero;
+        private Vector2 consoleScrollPosition = Vector2.zero;
+        private Vector2 fieldsScrollPosition = Vector2.zero;
         private bool autoScroll = true;
 
         [SerializeField] private CP_ConsoleMethods platinumConsoleMethods;
+        [SerializeField] private CP_ExposedFields exposedFields;
 
         public void Initialize()
         {
             DontDestroyOnLoad(this);
 
             platinumConsoleMethods = new CP_ConsoleMethods();
+            exposedFields = new CP_ExposedFields();
         }
 
         private void Start()
         {
             InitializeDebugWindow();
+        }
+
+        private void FixedUpdate()
+        {
+            CP_ExposedFields.UpdateCachedFieldValues();
         }
 
         void InitializeDebugWindow()
@@ -105,7 +114,6 @@ namespace CobaPlatinum.DebugTools
 
             if (Event.current.Equals(Event.KeyboardEvent("f12")))
             {
-                Debug.Log("console");
                 ToggleConsole();
             }
         }
@@ -151,11 +159,6 @@ namespace CobaPlatinum.DebugTools
             }
         }
 
-        public void DrawExposedVariables()
-        {
-            GUI.Label(new Rect(10, 60, 800, 20), "Exposed Variables:");
-        }
-
         public void DrawDebugSettings()
         {
             GUI.Label(new Rect(10, 60, 800, 20), "Debug Window Settings:");
@@ -177,9 +180,9 @@ namespace CobaPlatinum.DebugTools
             GUI.Box(new Rect(consoleRect.x, consoleRect.y, consoleRect.width - 20, consoleRect.height), "");
 
             if (autoScroll)
-                scrollPosition = new Vector2(0, consoleViewRect.height);
+                consoleScrollPosition = new Vector2(0, consoleViewRect.height);
 
-            scrollPosition = GUI.BeginScrollView(consoleRect, scrollPosition, consoleViewRect, false, true, GUIStyle.none, GUI.skin.verticalScrollbar);
+            consoleScrollPosition = GUI.BeginScrollView(consoleRect, consoleScrollPosition, consoleViewRect, false, true, GUIStyle.none, GUI.skin.verticalScrollbar);
 
             int index = 0;
             foreach (string message in consoleMessages)
@@ -198,6 +201,37 @@ namespace CobaPlatinum.DebugTools
             {
                 SendCommand();
             }
+        }
+
+        public void DrawExposedVariables()
+        {
+            GUI.Label(new Rect(10, 60, 800, 20), "Exposed Variables:");
+
+            Rect scrollViewRect = new Rect(10, 80, windowRect.width - 20, windowRect.height - 120);
+            Rect scrollViewContentRect = new Rect(scrollViewRect.x, scrollViewRect.y, scrollViewRect.width, 20 * consoleMessages.Count);
+
+            GUI.Box(new Rect(scrollViewRect.x, scrollViewRect.y, scrollViewRect.width - 20, scrollViewRect.height), "");
+
+            fieldsScrollPosition = GUI.BeginScrollView(scrollViewRect, fieldsScrollPosition, scrollViewRect, false, true, GUIStyle.none, GUI.skin.verticalScrollbar);
+
+            int index = 0;
+
+            foreach(string exposedObject in CP_ExposedFields.exposedMemberObjects)
+            {
+                Rect labelRect = new Rect(15, scrollViewContentRect.y + (20 * index), scrollViewContentRect.width, 20);
+                GUI.Label(labelRect, $"[{TextUtils.ColoredText("GameObject", Color.green)} - {exposedObject}]:");
+                index++;
+
+                List<TrackedExposedField> trackedFields = CP_ExposedFields.GetTrackedFieldsFromObject(exposedObject);
+                foreach (TrackedExposedField field in trackedFields)
+                {
+                    Rect labelFieldRect = new Rect(15, scrollViewContentRect.y + (20 * index), scrollViewContentRect.width, 20);
+                    GUI.Label(labelFieldRect, $"    - [{TextUtils.ColoredText(field.fieldName, Color.cyan)}:{field.fieldType}]  Value: {TextUtils.ColoredText(field.fieldValue, Color.magenta)}");
+                    index++;
+                }
+            }
+
+            GUI.EndScrollView();
         }
 
         private void OnEnable()
