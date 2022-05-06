@@ -5,7 +5,6 @@ using UnityEditor;
 
 using CobaPlatinum.DebugTools.Console.DefaultCommands;
 using CobaPlatinum.TextUtilities;
-using CobaPlatinum.TextUtilities;
 
 [CustomEditor(typeof(CP_DefaultCommands))]
 public class CP_DefaultCommandsEditor : Editor

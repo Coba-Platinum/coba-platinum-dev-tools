@@ -8,5 +8,6 @@
     "email": "cobaplatinum@gmail.com",
     "url": "www.cobaplatinum.com"
   },
-  "type": "tool"
+  "type": "tool",
+  "hideInEditor": false
 }
