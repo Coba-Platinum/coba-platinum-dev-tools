@@ -203,7 +203,7 @@ public class CP_PackageBuild : EditorWindow
             EditorUtility.DisplayProgressBar("Packaging Build", "initializing", 0);
 
             string exportPath = (packageBuildData.packagePath + "/" + string.Format("{0}.{1}.{2}", packageBuildData.currentVersion[0], packageBuildData.currentVersion[1], packageBuildData.currentVersion[2]));
-            string fullPackagePath = (exportPath + "/" + packageBuildData.packageName);
+            string fullPackagePath = (exportPath + "/" + packageBuildData.packageName + "/" + packageBuildData.packageName);
 
             try
             {
@@ -227,6 +227,15 @@ public class CP_PackageBuild : EditorWindow
                     Debug.Log(fullPackagePath + " was deleted successfully.");
                 }
 
+                if (Directory.Exists(exportPath))
+                {
+                    Debug.Log("That path exists already.");
+
+                    // Delete the directory.
+                    Directory.Delete(exportPath, true);
+                    Debug.Log(exportPath + " was deleted successfully.");
+                }
+
                 // Try to create the directory.
                 DirectoryInfo di = Directory.CreateDirectory(fullPackagePath);
                 Debug.Log(string.Format(di.FullName + " was created successfully at {0}.", Directory.GetCreationTime(fullPackagePath).ToString()));
@@ -248,8 +257,10 @@ public class CP_PackageBuild : EditorWindow
 
                 foreach (DirectoryInfo dir in directoryInfo.GetDirectories())
                 {
-                    ZipFile.CreateFromDirectory(dir.FullName, fullPackagePath + "/" + dir.Name + ".zip");
-                    Directory.Delete(dir.FullName, true);
+                    Directory.CreateDirectory(fullPackagePath + "/" + dir.Name);
+                    Directory.Move(dir.FullName, fullPackagePath + "/" + dir.Name + "/" + dir.Name);
+                    ZipFile.CreateFromDirectory(fullPackagePath + "/" + dir.Name, fullPackagePath + "/" + dir.Name + ".zip");
+                    Directory.Delete(fullPackagePath + "/" + dir.Name, true);
                 }
 
                 foreach (FileInfo file in directoryInfo.GetFiles())
@@ -257,8 +268,8 @@ public class CP_PackageBuild : EditorWindow
                     File.Move(file.FullName, fullPackagePath + "/" + file.Name);
                 }
 
-                ZipFile.CreateFromDirectory(fullPackagePath, exportPath + "/" + packageBuildData.packageName + ".zip");
-                Directory.Delete(fullPackagePath, true);
+                ZipFile.CreateFromDirectory(exportPath + "/" + packageBuildData.packageName, exportPath + "/" + packageBuildData.packageName + ".zip");
+                Directory.Delete(exportPath + "/" + packageBuildData.packageName, true);
             }
             catch (Exception e)
             {
