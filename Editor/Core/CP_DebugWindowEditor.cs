@@ -6,6 +6,7 @@ using UnityEditorInternal;
 
 using CobaPlatinum.DebugTools;
 using CobaPlatinum.DebugTools.Console.DefaultCommands;
+using CobaPlatinum.DebugTools.Console.DefaultExposedFields;
 using CobaPlatinum.TextUtilities;
 
 [CustomEditor(typeof(CP_DebugWindow))]
@@ -56,7 +57,7 @@ public class CP_DebugWindowEditor : Editor
         EditorGUILayout.Space();
 
         EditorGUILayout.BeginVertical("box");
-        currentTab = GUILayout.Toolbar(currentTab, new string[] { "Debug Window", "Debug Console", "Settings" });
+        currentTab = GUILayout.Toolbar(currentTab, new string[] { "Debug Window", "Debug Console", "Exposed Variables", "Settings" });
         EditorGUILayout.EndVertical();
 
         switch (currentTab)
@@ -68,6 +69,9 @@ public class CP_DebugWindowEditor : Editor
                 DrawDebugConsoleInspector();
                 break;
             case 2:
+                DrawExposedVariablesInspector();
+                break;
+            case 3:
                 DrawSettingsInspector();
                 break;
             default:
@@ -169,6 +173,24 @@ public class CP_DebugWindowEditor : Editor
         if (GUILayout.Button("Add Default Commands"))
         {
             CP_DefaultCommands defaultCommandsComponent = ObjectFactory.AddComponent<CP_DefaultCommands>(targetObject.gameObject);
+        }
+
+        EditorGUILayout.EndVertical();
+    }
+
+    private void DrawExposedVariablesInspector()
+    {
+        EditorGUILayout.BeginHorizontal("box");
+        GUILayout.Label("DEBUG EXPOSED VARIABLES", EditorStyles.largeLabel);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginVertical("box");
+        GUILayout.Label("Debug Console Exposed Fields", EditorStyles.boldLabel);
+
+        EditorGUILayout.Space();
+        if (GUILayout.Button("Add Default Exposed Fields"))
+        {
+            CP_DefaultExposedFields defaultExposedFieldsComponent = ObjectFactory.AddComponent<CP_DefaultExposedFields>(targetObject.gameObject);
         }
 
         EditorGUILayout.EndVertical();

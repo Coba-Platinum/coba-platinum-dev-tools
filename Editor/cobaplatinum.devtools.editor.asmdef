@@ -1,8 +1,8 @@
 {
-    "name": "cobaplatinum.debugtools.editor",
+    "name": "cobaplatinum.devtools.editor",
     "rootNamespace": "",
     "references": [
-        "GUID:15c292fb0bd1fe54085ee4b56218ae19"
+        "GUID:8616d552aca14154698f25d7e4f8b92a"
     ],
     "includePlatforms": [
         "Editor"
