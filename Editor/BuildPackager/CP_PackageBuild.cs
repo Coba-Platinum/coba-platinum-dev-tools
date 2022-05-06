@@ -20,6 +20,7 @@ public class CP_PackageBuild : EditorWindow
     public static void ShowWindow()
     {
         CP_PackageBuild window = GetWindow<CP_PackageBuild>("Package Build");
+        window.titleContent = new GUIContent("Package Build", EditorGUIUtility.ObjectContent(CreateInstance<CP_PackageBuild>(), typeof(CP_PackageBuild)).image);
         window.minSize = new Vector2(600, 600);
         window.maxSize = new Vector2(600, 600);
     }
@@ -40,8 +41,11 @@ public class CP_PackageBuild : EditorWindow
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.Space();
 
+        EditorGUILayout.BeginHorizontal("box");
+        GUILayout.Label("PACKAGE DETAILS", EditorStyles.largeLabel);
+        EditorGUILayout.EndHorizontal();
+
         EditorGUILayout.BeginVertical("box");
-        GUILayout.Label("Package Options", EditorStyles.boldLabel);
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.PrefixLabel("Package Name");
         packageName = EditorGUILayout.TextField(packageName);
@@ -49,12 +53,19 @@ public class CP_PackageBuild : EditorWindow
         EditorGUILayout.Popup("Package build for", 0, new string[] { "Coba Platinum Patcher" });
         EditorGUILayout.EndVertical();
 
-        EditorGUILayout.BeginVertical("box");
-        GUILayout.Label("Package Manifest", EditorStyles.boldLabel);
-        EditorGUILayout.EndVertical();
+        EditorGUILayout.Space();
+
+        EditorGUILayout.BeginHorizontal("box");
+        GUILayout.Label("PACKAGE MANIFEST", EditorStyles.largeLabel);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.Space();
+
+        EditorGUILayout.BeginHorizontal("box");
+        GUILayout.Label("BUILD VERSION", EditorStyles.largeLabel);
+        EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginVertical("box");
-        GUILayout.Label("Build Bersion", EditorStyles.boldLabel);
 
         int autoIncrement = 0;
         if (CP_BuildVersionProcessor.autoIncrement)
@@ -69,8 +80,13 @@ public class CP_PackageBuild : EditorWindow
         else
             CP_BuildVersionProcessor.autoIncrement = false;
 
-        if(!CP_BuildVersionProcessor.autoIncrement)
-            EditorGUILayout.HelpBox("The current build version will not automatically update when you build the project as long as build incrementing is set to manual!", MessageType.Warning);
+        if (!CP_BuildVersionProcessor.autoIncrement)
+        {
+            EditorGUILayout.Space();
+
+            EditorGUILayout.HelpBox("The current build version will not automatically update as long as 'Build Incrementing' is set to 'Manual'! " +
+                "Set 'Build Incrementing' to 'Automatic' if you would like the version to dynamically update when you build the project!", MessageType.Warning);
+        }
 
         EditorGUILayout.Space();
 
@@ -106,8 +122,13 @@ public class CP_PackageBuild : EditorWindow
 
         EditorGUILayout.EndVertical();
 
+        EditorGUILayout.Space();
+
+        EditorGUILayout.BeginHorizontal("box");
+        GUILayout.Label("BUILD DETAILS", EditorStyles.largeLabel);
+        EditorGUILayout.EndHorizontal();
+
         EditorGUILayout.BeginVertical("box");
-        GUILayout.Label("Build Details", EditorStyles.boldLabel);
 
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.PrefixLabel("Project Build Location");
@@ -128,9 +149,19 @@ public class CP_PackageBuild : EditorWindow
 
         EditorGUILayout.EndVertical();
 
+        EditorGUILayout.Space();
+
+        EditorGUILayout.BeginHorizontal("box");
+        GUILayout.Label("PACKAGE OPTIONS", EditorStyles.largeLabel);
+        EditorGUILayout.EndHorizontal();
+
         EditorGUILayout.BeginVertical("box");
-        GUILayout.Label("Build Options", EditorStyles.boldLabel);
-        if(GUILayout.Button("Package Build"))
+        if(GUILayout.Button("Package Existing Build"))
+        {
+            PackageBuild();
+        }
+
+        if (GUILayout.Button("Build and Package"))
         {
             PackageBuild();
         }
@@ -146,19 +177,19 @@ public class CP_PackageBuild : EditorWindow
     {
         if (buildPath.Equals(""))
         {
-            EditorUtility.DisplayDialog("Failed to Build Package!", "The build location of the project has not been selected! Please select a build location and try again!", "Ok");
+            EditorUtility.DisplayDialog("Failed to Package Build!", "The build location of the project has not been selected! Please select a build location and try again!", "Ok");
             return false;
         }
 
         if (packagePath.Equals(""))
         {
-            EditorUtility.DisplayDialog("Failed to Build Package!", "The package location of the project has not been selected! Please select a package location and try again!", "Ok");
+            EditorUtility.DisplayDialog("Failed to Package Build!", "The package location of the project has not been selected! Please select a package location and try again!", "Ok");
             return false;
         }
 
         if (packageName.Equals(""))
         {
-            EditorUtility.DisplayDialog("Failed to Build Package!", "The package name of the project has not been selected! Please select a package name and try again!", "Ok");
+            EditorUtility.DisplayDialog("Failed to Package Build!", "The package name of the project has not been selected! Please select a package name and try again!", "Ok");
             return false;
         }
 
