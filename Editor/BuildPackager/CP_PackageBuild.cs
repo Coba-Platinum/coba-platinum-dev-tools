@@ -296,7 +296,7 @@ public class CP_PackageBuild : EditorWindow
         jsonLines.Add("   {\"fileName\":\"" + packageBuildData.packageManifestAsset.manifestFiles[packageBuildData.packageManifestAsset.manifestFiles.Length - 1].fileName + "\", \"fromDir\":\""
                 + packageBuildData.packageManifestAsset.manifestFiles[packageBuildData.packageManifestAsset.manifestFiles.Length - 1].originDirectory + "\", \"toDir\":\"" 
                 + packageBuildData.packageManifestAsset.manifestFiles[packageBuildData.packageManifestAsset.manifestFiles.Length - 1].targetDirectory
-                + "\", \"zipFile\":\"" + packageBuildData.packageManifestAsset.manifestFiles[packageBuildData.packageManifestAsset.manifestFiles.Length - 1].isCompressed + "\"},");
+                + "\", \"zipFile\":\"" + packageBuildData.packageManifestAsset.manifestFiles[packageBuildData.packageManifestAsset.manifestFiles.Length - 1].isCompressed + "\"}]");
 
         jsonLines.Add("}");
 
