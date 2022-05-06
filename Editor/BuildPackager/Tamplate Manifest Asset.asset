@@ -12,7 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 116d899ff4a4b8a4cb42ef58b304845e, type: 3}
   m_Name: Tamplate Manifest Asset
   m_EditorClassIdentifier: 
-  packageName: 
-  packageVersion: 
-  alternateDirectory: 
-  manifestFiles: []
+  manifestFiles:
+  - fileName: template_date
+    originDirectory: '[TempPath]\\template_data.zip'
+    targetDirectory: '[ApplicationPath]'
+    isCompressed: 1
+  - fileName: MonoBleedingEdge
+    originDirectory: '[TempPath]\\MonoBleedingEdge.zip'
+    targetDirectory: '[ApplicationPath]'
+    isCompressed: 1
+  - fileName: 
+    originDirectory: '[TempPath]\\UnityPlayer.dll'
+    targetDirectory: '[ApplicationPath]\\UnityPlayer.dll'
+    isCompressed: 0
+  - fileName: 
+    originDirectory: '[TempPath]\\template.exe'
+    targetDirectory: '[ApplicationPath]\\template.exe'
+    isCompressed: 0
+  - fileName: 
+    originDirectory: '[TempPath]\\UnityCrashHandler64.exe'
+    targetDirectory: '[ApplicationPath]\\UnityCrashHandler64.exe'
+    isCompressed: 0

@@ -5,6 +5,8 @@ using System;
 using CobaPlatinum.TextUtilities;
 using CobaPlatinum.Utilities.Versioning;
 using System.IO;
+using System.IO.Compression;
+using System.Collections.Generic;
 
 public class CP_PackageBuild : EditorWindow
 {
@@ -42,6 +44,11 @@ public class CP_PackageBuild : EditorWindow
         GUILayout.FlexibleSpace();
         GUI.backgroundColor = Color.white;
         EditorGUILayout.EndHorizontal();
+        if (GUILayout.Button("Add Compression DLL"))
+        {
+            File.WriteAllText(Application.dataPath + "/csc.rsp", "-r:System.IO.Compression.FileSystem.dll");
+            EditorUtility.DisplayDialog("Added missing DLL!", "Added missing DLL: System.IO.Compression.FileSystem.dll", "Ok");
+        }
         EditorGUILayout.Space();
 
         EditorGUILayout.BeginHorizontal("box");
@@ -121,7 +128,7 @@ public class CP_PackageBuild : EditorWindow
 
         EditorGUILayout.Space();
 
-        if(CP_BuildVersionProcessor.autoIncrement)
+        if (CP_BuildVersionProcessor.autoIncrement)
             CP_BuildVersionProcessor.buildType = (VersionBuildType)EditorGUILayout.EnumPopup("Version Build Level", CP_BuildVersionProcessor.buildType);
 
         CP_BuildVersionProcessor.devStage = (VersionDevStage)EditorGUILayout.EnumPopup("Version Build Level", CP_BuildVersionProcessor.devStage);
@@ -140,7 +147,7 @@ public class CP_PackageBuild : EditorWindow
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.PrefixLabel("Project Build Location");
         buildPath = EditorGUILayout.TextField(buildPath);
-        if(GUILayout.Button("Browse"))
+        if (GUILayout.Button("Browse"))
         {
             buildPath = EditorUtility.OpenFolderPanel("Select Build Folder", "", "");
         }
@@ -164,7 +171,7 @@ public class CP_PackageBuild : EditorWindow
 
         EditorGUILayout.BeginVertical("box");
         EditorGUILayout.BeginHorizontal();
-        if(GUILayout.Button("Package Existing"))
+        if (GUILayout.Button("Package Existing"))
         {
             PackageBuild();
         }
@@ -181,10 +188,14 @@ public class CP_PackageBuild : EditorWindow
     {
         VerifySettings();
 
-        string fullPackagePath = (packagePath + "\\" + packageName);
+        EditorUtility.DisplayProgressBar("Packaging Build", "initializing", 0);
+
+        string exportPath = (packagePath + "/" + string.Format("{0}.{1}.{2}", currentVersion[0], currentVersion[1], currentVersion[2]));
+        string fullPackagePath = (exportPath + "/" + packageName);
 
         try
         {
+            EditorUtility.DisplayProgressBar("Packaging Build", "Creating package directory: " + fullPackagePath, 0.25f);
             // Determine whether the directory exists.
             if (Directory.Exists(fullPackagePath))
             {
@@ -193,18 +204,73 @@ public class CP_PackageBuild : EditorWindow
                 // Delete the directory.
                 Directory.Delete(fullPackagePath, true);
                 Debug.Log(fullPackagePath + " was deleted successfully.");
-
-                return;
             }
 
             // Try to create the directory.
             DirectoryInfo di = Directory.CreateDirectory(fullPackagePath);
             Debug.Log(string.Format(di.FullName + " was created successfully at {0}.", Directory.GetCreationTime(fullPackagePath).ToString()));
+
+            EditorUtility.DisplayProgressBar("Packaging Build", "Creating " + exportPath + "/Verstion.txt", 0.5f);
+
+            // Create the file, or overwrite if the file exists.
+            File.WriteAllText(exportPath + "/Verstion.txt", PlayerSettings.bundleVersion.ToString());
+            Debug.Log(string.Format(exportPath + "/Verstion.txt" + " was created successfully at {0}.", File.GetCreationTime(exportPath + "\\Verstion.txt").ToString()));
+
+            EditorUtility.DisplayProgressBar("Packaging Build", "Creating " + exportPath + "/Manifest.json", 0.75f);
+
+            // Create the file, or overwrite if the file exists.
+            File.WriteAllLines(exportPath + "/Manifest.json", CreateJsonContent());
+            Debug.Log(string.Format(exportPath + "/Manifest.json" + " was created successfully at {0}.", File.GetCreationTime(exportPath + "\\Verstion.txt").ToString()));
+
+            EditorUtility.DisplayProgressBar("Packaging Build", "Done", 1f);
+
+            EditorUtility.DisplayDialog("Build Packaged!", string.Format("Build successfuly packaged! \nPackage Name: {0} \nVersion: {1} \nCreated at: {2}", packageName, PlayerSettings.bundleVersion, exportPath), "Ok");
+
+            DirectoryInfo directoryInfo = new DirectoryInfo(buildPath);
+
+            foreach (DirectoryInfo dir in directoryInfo.GetDirectories())
+            {
+                ZipFile.CreateFromDirectory(dir.FullName, fullPackagePath + "/" + dir.Name + ".zip");
+                Directory.Delete(dir.FullName, true);
+            }
+
+            foreach (FileInfo file in directoryInfo.GetFiles())
+            {
+                File.Move(file.FullName, fullPackagePath + "/" + file.Name);
+            }
+
+            ZipFile.CreateFromDirectory(fullPackagePath, packagePath + "/" + packageName + ".zip");
         }
         catch (Exception e)
         {
             Debug.Log(string.Format("The process failed: {0}", e.ToString()));
+            EditorUtility.DisplayDialog("Package build failed!", string.Format("The process failed: {0}", e.ToString()), "Ok");
         }
+
+        EditorUtility.ClearProgressBar();
+    }
+
+    public List<string> CreateJsonContent()
+    {
+        List<string> jsonLines = new List<string>();
+
+        jsonLines.Add("{");
+        jsonLines.Add(string.Format("\"alternateDirectory\":\"{0}\",", packageName));
+        jsonLines.Add("\"filesToCopy\":[");
+
+        for (int i = 0; i < manifestAsset.manifestFiles.Length; i++)
+        {
+            jsonLines.Add("   {\"fileName\":\"" + manifestAsset.manifestFiles[i].fileName + "\", \"fromDir\":\"" 
+                + manifestAsset.manifestFiles[i].originDirectory + "\", \"toDir\":\"" + manifestAsset.manifestFiles[i].targetDirectory 
+                + "\", \"zipFile\":\"" + manifestAsset.manifestFiles[i].isCompressed + "\"},");
+        }
+        jsonLines.Add("   {\"fileName\":\"" + manifestAsset.manifestFiles[manifestAsset.manifestFiles.Length - 1].fileName + "\", \"fromDir\":\""
+                + manifestAsset.manifestFiles[manifestAsset.manifestFiles.Length - 1].originDirectory + "\", \"toDir\":\"" + manifestAsset.manifestFiles[manifestAsset.manifestFiles.Length - 1].targetDirectory
+                + "\", \"zipFile\":\"" + manifestAsset.manifestFiles[manifestAsset.manifestFiles.Length - 1].isCompressed + "\"},");
+
+        jsonLines.Add("}");
+
+        return jsonLines;
     }
 
     private bool VerifySettings()
