@@ -30,7 +30,6 @@ namespace CobaPlatinum.Utilities.Versioning
         {
             //Split to find string of current version
             string insideParentheses = Regex.Match(PlayerSettings.bundleVersion, @"\(([^)]*)\)").Groups[1].Value;
-            Debug.Log(insideParentheses);
             string[] currentVersionString = insideParentheses.Split('.');
             int[] currentVersion = new int[] { 0, 0, 0 };
 

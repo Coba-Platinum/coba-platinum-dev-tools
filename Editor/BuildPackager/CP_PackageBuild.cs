@@ -13,25 +13,33 @@ public class CP_PackageBuild : EditorWindow
     GUIStyle headerStyle;
     Color headerColor = TextUtils.UnnormalizedColor(0, 168, 255);
 
-    public string buildPath = "";
-    public string packagePath = "";
-    public string packageName = "";
-
-    public int[] currentVersion;
-
-    public PackageManifestAsset manifestAsset;
+    PackageBuildData packageBuildData;
 
     [MenuItem("Coba Platinum/Package Build")]
     public static void ShowWindow()
     {
         CP_PackageBuild window = GetWindow<CP_PackageBuild>("Package Build");
         window.titleContent = new GUIContent("Package Build", EditorGUIUtility.ObjectContent(CreateInstance<CP_PackageBuild>(), typeof(CP_PackageBuild)).image);
-        window.minSize = new Vector2(600, 550);
-        window.maxSize = new Vector2(600, 550);
+        window.minSize = new Vector2(600, 580);
+        window.maxSize = new Vector2(600, 580);
     }
 
     private void OnGUI()
     {
+        if(!File.Exists("Assets/Package Build Data.asset"))
+        {
+            PackageBuildData asset = ScriptableObject.CreateInstance<PackageBuildData>();
+            AssetDatabase.CreateAsset(asset, "Assets/Package Build Data.asset");
+            Debug.Log("Created Package Build Data.asset at " + "Assets/Package Build Data.asset");
+            AssetDatabase.SaveAssets();
+            return;
+        }
+        else if(packageBuildData == null)
+        {
+            packageBuildData = AssetDatabase.LoadAssetAtPath<PackageBuildData>("Assets/Package Build Data.asset");
+            return;
+        }
+
         headerStyle = new GUIStyle(GUI.skin.box);
         headerStyle.normal.background = Texture2D.whiteTexture; // must be white to tint properly
         headerStyle.normal.textColor = Color.white; // whatever you want
@@ -58,8 +66,7 @@ public class CP_PackageBuild : EditorWindow
         EditorGUILayout.BeginVertical("box");
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.PrefixLabel("Package Name");
-        packageName = EditorPrefs.GetString("PackageName");
-        EditorPrefs.SetString("PackageName", EditorGUILayout.TextField(packageName));
+        packageBuildData.packageName = EditorGUILayout.TextField(packageBuildData.packageName);
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.Popup("Package build for", 0, new string[] { "Coba Platinum Patcher" });
         EditorGUILayout.EndVertical();
@@ -71,7 +78,7 @@ public class CP_PackageBuild : EditorWindow
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginVertical("box");
-        manifestAsset = (PackageManifestAsset)EditorGUILayout.ObjectField("Package Manifest Asset", manifestAsset, typeof(PackageManifestAsset), false);
+        packageBuildData.packageManifestAsset = (PackageManifestAsset)EditorGUILayout.ObjectField("Package Manifest Asset", packageBuildData.packageManifestAsset, typeof(PackageManifestAsset), false);
         EditorGUILayout.EndVertical();
 
         EditorGUILayout.Space();
@@ -83,7 +90,7 @@ public class CP_PackageBuild : EditorWindow
         EditorGUILayout.BeginVertical("box");
 
         int autoIncrement = 0;
-        if (CP_BuildVersionProcessor.autoIncrement)
+        if (packageBuildData.autoIncrement)
             autoIncrement = 0;
         else
             autoIncrement = 1;
@@ -91,11 +98,13 @@ public class CP_PackageBuild : EditorWindow
         autoIncrement = EditorGUILayout.Popup("Build Incrementing", autoIncrement, new string[] { "Automatic", "Manual" });
 
         if (autoIncrement == 0)
-            CP_BuildVersionProcessor.autoIncrement = true;
+            packageBuildData.autoIncrement = true;
         else
-            CP_BuildVersionProcessor.autoIncrement = false;
+            packageBuildData.autoIncrement = false;
 
-        if (!CP_BuildVersionProcessor.autoIncrement)
+        CP_BuildVersionProcessor.autoIncrement = packageBuildData.autoIncrement;
+
+        if (!packageBuildData.autoIncrement)
         {
             EditorGUILayout.Space();
 
@@ -107,33 +116,38 @@ public class CP_PackageBuild : EditorWindow
 
         EditorGUILayout.LabelField("Current Build Version - Major.Minor.Patch");
         EditorGUILayout.BeginHorizontal();
-        if (!CP_BuildVersionProcessor.autoIncrement)
+        if (!packageBuildData.autoIncrement)
         {
-            currentVersion[0] = EditorGUILayout.IntField(currentVersion[0]);
-            currentVersion[1] = EditorGUILayout.IntField(currentVersion[1]);
-            currentVersion[2] = EditorGUILayout.IntField(currentVersion[2]);
+            packageBuildData.currentVersion[0] = EditorGUILayout.IntField(packageBuildData.currentVersion[0]);
+            packageBuildData.currentVersion[1] = EditorGUILayout.IntField(packageBuildData.currentVersion[1]);
+            packageBuildData.currentVersion[2] = EditorGUILayout.IntField(packageBuildData.currentVersion[2]);
             if (GUILayout.Button("Set Version"))
             {
-                CP_BuildVersionProcessor.SetVersion(currentVersion);
+                CP_BuildVersionProcessor.SetVersion(packageBuildData.currentVersion);
             }
         }
         else
         {
-            currentVersion = CP_BuildVersionProcessor.FindCurrentVersion();
+            packageBuildData.currentVersion = CP_BuildVersionProcessor.FindCurrentVersion();
 
-            EditorGUILayout.IntField(currentVersion[0]);
-            EditorGUILayout.IntField(currentVersion[1]);
-            EditorGUILayout.IntField(currentVersion[2]);
+            EditorGUILayout.IntField(packageBuildData.currentVersion[0]);
+            EditorGUILayout.IntField(packageBuildData.currentVersion[1]);
+            EditorGUILayout.IntField(packageBuildData.currentVersion[2]);
         }
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.Space();
 
-        if (CP_BuildVersionProcessor.autoIncrement)
-            CP_BuildVersionProcessor.buildType = (VersionBuildType)EditorGUILayout.EnumPopup("Version Build Level", CP_BuildVersionProcessor.buildType);
+        if (packageBuildData.autoIncrement)
+            packageBuildData.versionBuildLevel = (VersionBuildType)EditorGUILayout.EnumPopup("Version Build Level", packageBuildData.versionBuildLevel);
 
-        CP_BuildVersionProcessor.devStage = (VersionDevStage)EditorGUILayout.EnumPopup("Version Build Level", CP_BuildVersionProcessor.devStage);
-        CP_BuildVersionProcessor.devBuild = EditorGUILayout.Toggle("Version is DEV build", CP_BuildVersionProcessor.devBuild);
+        CP_BuildVersionProcessor.buildType = packageBuildData.versionBuildLevel;
+
+        packageBuildData.versionDevStage = (VersionDevStage)EditorGUILayout.EnumPopup("Version Build Stage", packageBuildData.versionDevStage);
+        CP_BuildVersionProcessor.devStage = packageBuildData.versionDevStage;
+
+        packageBuildData.isDevBuild = EditorGUILayout.Toggle("Version is DEV build", packageBuildData.isDevBuild);
+        CP_BuildVersionProcessor.devBuild = packageBuildData.isDevBuild;
 
         EditorGUILayout.EndVertical();
 
@@ -147,20 +161,18 @@ public class CP_PackageBuild : EditorWindow
 
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.PrefixLabel("Project Build Location");
-        buildPath = EditorPrefs.GetString("BuildPath");
-        EditorPrefs.SetString("BuildPath", EditorGUILayout.TextField(buildPath));
+        packageBuildData.buildPath = EditorGUILayout.TextField(packageBuildData.buildPath);
         if (GUILayout.Button("Browse"))
         {
-            EditorPrefs.SetString("BuildPath", EditorUtility.OpenFolderPanel("Select Build Folder", "", ""));
+            packageBuildData.buildPath = EditorUtility.OpenFolderPanel("Select Build Folder", "", "");
         }
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.PrefixLabel("Create Package Location");
-        packagePath = EditorPrefs.GetString("PackagePath");
-        EditorPrefs.SetString("PackagePath", EditorGUILayout.TextField(packagePath));
+        packageBuildData.packagePath = EditorGUILayout.TextField(packageBuildData.packagePath);
         if (GUILayout.Button("Browse"))
         {
-            EditorPrefs.SetString("PackagePath", EditorUtility.OpenFolderPanel("Select Package Folder", "", ""));
+            packageBuildData.packagePath = EditorUtility.OpenFolderPanel("Select Package Folder", "", "");
         }
         EditorGUILayout.EndHorizontal();
 
@@ -180,6 +192,8 @@ public class CP_PackageBuild : EditorWindow
         }
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.EndVertical();
+
+        EditorUtility.SetDirty(packageBuildData);
     }
 
     private void PackageBuild()
@@ -188,12 +202,12 @@ public class CP_PackageBuild : EditorWindow
         {
             EditorUtility.DisplayProgressBar("Packaging Build", "initializing", 0);
 
-            string exportPath = (packagePath + "/" + string.Format("{0}.{1}.{2}", currentVersion[0], currentVersion[1], currentVersion[2]));
-            string fullPackagePath = (exportPath + "/" + packageName);
+            string exportPath = (packageBuildData.packagePath + "/" + string.Format("{0}.{1}.{2}", packageBuildData.currentVersion[0], packageBuildData.currentVersion[1], packageBuildData.currentVersion[2]));
+            string fullPackagePath = (exportPath + "/" + packageBuildData.packageName);
 
             try
             {
-                DirectoryInfo directoryInfo = new DirectoryInfo(buildPath);
+                DirectoryInfo directoryInfo = new DirectoryInfo(packageBuildData.buildPath);
 
                 if (directoryInfo.GetDirectories().Length <= 0 || directoryInfo.GetFiles().Length <= 0)
                 {
@@ -243,7 +257,7 @@ public class CP_PackageBuild : EditorWindow
                     File.Move(file.FullName, fullPackagePath + "/" + file.Name);
                 }
 
-                ZipFile.CreateFromDirectory(fullPackagePath, exportPath + "/" + packageName + ".zip");
+                ZipFile.CreateFromDirectory(fullPackagePath, exportPath + "/" + packageBuildData.packageName + ".zip");
                 Directory.Delete(fullPackagePath, true);
             }
             catch (Exception e)
@@ -254,7 +268,7 @@ public class CP_PackageBuild : EditorWindow
                 return;
             }
 
-            EditorUtility.DisplayDialog("Build Packaged!", string.Format("Build successfuly packaged! \nPackage Name: {0} \nVersion: {1} \nCreated at: {2}", packageName, PlayerSettings.bundleVersion, exportPath), "Ok");
+            EditorUtility.DisplayDialog("Build Packaged!", string.Format("Build successfuly packaged! \nPackage Name: {0} \nVersion: {1} \nCreated at: {2}", packageBuildData.packageName, PlayerSettings.bundleVersion, exportPath), "Ok");
 
             EditorUtility.ClearProgressBar();
             EditorUtility.DisplayProgressBar("Packaging Build", "Done", 1f);
@@ -270,18 +284,19 @@ public class CP_PackageBuild : EditorWindow
         List<string> jsonLines = new List<string>();
 
         jsonLines.Add("{");
-        jsonLines.Add(string.Format("\"alternateDirectory\":\"{0}\",", packageName));
+        jsonLines.Add(string.Format("\"alternateDirectory\":\"{0}\",", packageBuildData.packageName));
         jsonLines.Add("\"filesToCopy\":[");
 
-        for (int i = 0; i < manifestAsset.manifestFiles.Length; i++)
+        for (int i = 0; i < packageBuildData.packageManifestAsset.manifestFiles.Length - 1; i++)
         {
-            jsonLines.Add("   {\"fileName\":\"" + manifestAsset.manifestFiles[i].fileName + "\", \"fromDir\":\"" 
-                + manifestAsset.manifestFiles[i].originDirectory + "\", \"toDir\":\"" + manifestAsset.manifestFiles[i].targetDirectory 
-                + "\", \"zipFile\":\"" + manifestAsset.manifestFiles[i].isCompressed + "\"},");
+            jsonLines.Add("   {\"fileName\":\"" + packageBuildData.packageManifestAsset.manifestFiles[i].fileName + "\", \"fromDir\":\"" 
+                + packageBuildData.packageManifestAsset.manifestFiles[i].originDirectory + "\", \"toDir\":\"" + packageBuildData.packageManifestAsset.manifestFiles[i].targetDirectory 
+                + "\", \"zipFile\":\"" + packageBuildData.packageManifestAsset.manifestFiles[i].isCompressed + "\"},");
         }
-        jsonLines.Add("   {\"fileName\":\"" + manifestAsset.manifestFiles[manifestAsset.manifestFiles.Length - 1].fileName + "\", \"fromDir\":\""
-                + manifestAsset.manifestFiles[manifestAsset.manifestFiles.Length - 1].originDirectory + "\", \"toDir\":\"" + manifestAsset.manifestFiles[manifestAsset.manifestFiles.Length - 1].targetDirectory
-                + "\", \"zipFile\":\"" + manifestAsset.manifestFiles[manifestAsset.manifestFiles.Length - 1].isCompressed + "\"},");
+        jsonLines.Add("   {\"fileName\":\"" + packageBuildData.packageManifestAsset.manifestFiles[packageBuildData.packageManifestAsset.manifestFiles.Length - 1].fileName + "\", \"fromDir\":\""
+                + packageBuildData.packageManifestAsset.manifestFiles[packageBuildData.packageManifestAsset.manifestFiles.Length - 1].originDirectory + "\", \"toDir\":\"" 
+                + packageBuildData.packageManifestAsset.manifestFiles[packageBuildData.packageManifestAsset.manifestFiles.Length - 1].targetDirectory
+                + "\", \"zipFile\":\"" + packageBuildData.packageManifestAsset.manifestFiles[packageBuildData.packageManifestAsset.manifestFiles.Length - 1].isCompressed + "\"},");
 
         jsonLines.Add("}");
 
@@ -290,25 +305,25 @@ public class CP_PackageBuild : EditorWindow
 
     private bool VerifySettings()
     {
-        if (buildPath.Equals(""))
+        if (packageBuildData.buildPath.Equals(""))
         {
             EditorUtility.DisplayDialog("Failed to Package Build!", "The build location of the project has not been selected! Please select a build location and try again!", "Ok");
             return false;
         }
 
-        if (packagePath.Equals(""))
+        if (packageBuildData.packagePath.Equals(""))
         {
             EditorUtility.DisplayDialog("Failed to Package Build!", "The package location of the project has not been selected! Please select a package location and try again!", "Ok");
             return false;
         }
 
-        if (packageName.Equals(""))
+        if (packageBuildData.packageName.Equals(""))
         {
             EditorUtility.DisplayDialog("Failed to Package Build!", "The package name of the project has not been selected! Please select a package name and try again!", "Ok");
             return false;
         }
 
-        if (manifestAsset == null)
+        if (packageBuildData.packageManifestAsset == null)
         {
             EditorUtility.DisplayDialog("Failed to Package Build!", "The package manifest asset of the project has not been selected! Please select a package manifest asset and try again!", "Ok");
             return false;
