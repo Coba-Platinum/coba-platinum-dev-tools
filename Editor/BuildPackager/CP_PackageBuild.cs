@@ -231,17 +231,17 @@ public class CP_PackageBuild : EditorWindow
                 DirectoryInfo di = Directory.CreateDirectory(fullPackagePath);
                 Debug.Log(string.Format(di.FullName + " was created successfully at {0}.", Directory.GetCreationTime(fullPackagePath).ToString()));
                 EditorUtility.ClearProgressBar();
-                EditorUtility.DisplayProgressBar("Packaging Build", "Creating " + exportPath + "/Verstion.txt", 0.5f);
+                EditorUtility.DisplayProgressBar("Packaging Build", "Creating " + exportPath + "/Version.txt", 0.5f);
 
                 // Create the file, or overwrite if the file exists.
                 File.WriteAllText(exportPath + "/Verstion.txt", PlayerSettings.bundleVersion.ToString());
-                Debug.Log(string.Format(exportPath + "/Verstion.txt" + " was created successfully at {0}.", File.GetCreationTime(exportPath + "\\Verstion.txt").ToString()));
+                Debug.Log(string.Format(exportPath + "/Version.txt" + " was created successfully at {0}.", File.GetCreationTime(exportPath + "/Version.txt").ToString()));
                 EditorUtility.ClearProgressBar();
                 EditorUtility.DisplayProgressBar("Packaging Build", "Creating " + exportPath + "/Manifest.json", 0.75f);
 
                 // Create the file, or overwrite if the file exists.
                 File.WriteAllLines(exportPath + "/Manifest.json", CreateJsonContent());
-                Debug.Log(string.Format(exportPath + "/Manifest.json" + " was created successfully at {0}.", File.GetCreationTime(exportPath + "\\Verstion.txt").ToString()));
+                Debug.Log(string.Format(exportPath + "/Manifest.json" + " was created successfully at {0}.", File.GetCreationTime(exportPath + "/Manifest.json").ToString()));
 
                 EditorUtility.ClearProgressBar();
                 EditorUtility.DisplayProgressBar("Packaging Build", "Compressing package files", 0.9f);
