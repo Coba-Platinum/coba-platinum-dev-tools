@@ -6,6 +6,7 @@ using UnityEditorInternal;
 
 using CobaPlatinum.DebugTools;
 using CobaPlatinum.DebugTools.Console.DefaultCommands;
+using CobaPlatinum.TextUtilities;
 
 [CustomEditor(typeof(CP_DebugWindow))]
 public class CP_DebugWindowEditor : Editor
@@ -21,6 +22,9 @@ public class CP_DebugWindowEditor : Editor
     SerializedProperty m_UnityTag;
     SerializedProperty m_ConsoleTag;
 
+    GUIStyle headerStyle;
+    Color headerColor = TextUtils.UnnormalizedColor(0, 168, 255);
+
     private void OnEnable()
     {
         targetObject = (CP_DebugWindow)target;
@@ -35,13 +39,21 @@ public class CP_DebugWindowEditor : Editor
 
     public override void OnInspectorGUI()
     {
+        headerStyle = new GUIStyle(GUI.skin.box);
+        headerStyle.normal.background = Texture2D.whiteTexture; // must be white to tint properly
+        headerStyle.normal.textColor = Color.white; // whatever you want
+        headerStyle.fontSize = 14;
+
         //base.OnInspectorGUI();
 
-        EditorGUILayout.BeginHorizontal("box");
+        EditorGUILayout.BeginHorizontal();
+        GUI.backgroundColor = headerColor;
         GUILayout.FlexibleSpace();
-        GUILayout.Label("COBA PLATINUM DEBUG WINDOW", EditorStyles.largeLabel);
+        GUILayout.Box("COBA PLATINUM DEBUG WINDOW", headerStyle, GUILayout.Width(Screen.width));
         GUILayout.FlexibleSpace();
+        GUI.backgroundColor = Color.white;
         EditorGUILayout.EndHorizontal();
+        EditorGUILayout.Space();
 
         EditorGUILayout.BeginVertical("box");
         currentTab = GUILayout.Toolbar(currentTab, new string[] { "Debug Window", "Debug Console", "Settings" });

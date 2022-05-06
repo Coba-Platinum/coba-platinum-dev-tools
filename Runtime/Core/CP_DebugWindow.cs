@@ -37,7 +37,7 @@ namespace CobaPlatinum.DebugTools
 
         [SerializeField][ExposedField("Debug Window Showing")] public bool showDebugWindow = false;
         [SerializeField] private Rect windowRect = new Rect(20, 20, 800, 50);
-        [SerializeField][ExposedField()] private int tabIndex = 0;
+        [SerializeField][ExposedField] private int tabIndex = 0;
 
         [SerializeField] private int maxConsoleMessages = 200;
         [SerializeField] private Queue<string> consoleMessages = new Queue<string>();

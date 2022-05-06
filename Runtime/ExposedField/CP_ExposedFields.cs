@@ -30,7 +30,7 @@ public class CP_ExposedFields
 
             foreach (Type type in types)
             {
-                BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+                BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
                 MemberInfo[] members = type.GetMembers(flags);
 
                 foreach (MemberInfo member in members)
