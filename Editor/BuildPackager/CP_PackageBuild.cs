@@ -234,7 +234,7 @@ public class CP_PackageBuild : EditorWindow
                 EditorUtility.DisplayProgressBar("Packaging Build", "Creating " + exportPath + "/Version.txt", 0.5f);
 
                 // Create the file, or overwrite if the file exists.
-                File.WriteAllText(exportPath + "/Verstion.txt", PlayerSettings.bundleVersion.ToString());
+                File.WriteAllText(exportPath + "/Version.txt", PlayerSettings.bundleVersion.ToString());
                 Debug.Log(string.Format(exportPath + "/Version.txt" + " was created successfully at {0}.", File.GetCreationTime(exportPath + "/Version.txt").ToString()));
                 EditorUtility.ClearProgressBar();
                 EditorUtility.DisplayProgressBar("Packaging Build", "Creating " + exportPath + "/Manifest.json", 0.75f);
