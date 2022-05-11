@@ -8,20 +8,24 @@ using System.IO;
 using System.IO.Compression;
 using System.Collections.Generic;
 
-public class CP_PackageBuild : EditorWindow
+public class CP_PackageForge : EditorWindow
 {
     GUIStyle headerStyle;
     Color headerColor = TextUtils.UnnormalizedColor(0, 168, 255);
 
     PackageBuildData packageBuildData;
 
-    [MenuItem("Coba Platinum/Package Build")]
+    private bool showPackageDetails = false;
+    private bool showBuildVersion = false;
+    private bool showBuildDetails = false;
+
+    public int tab = 0;
+
+    [MenuItem("Coba Platinum/Package Forge")]
     public static void ShowWindow()
     {
-        CP_PackageBuild window = GetWindow<CP_PackageBuild>("Package Build");
-        window.titleContent = new GUIContent("Package Build", EditorGUIUtility.ObjectContent(CreateInstance<CP_PackageBuild>(), typeof(CP_PackageBuild)).image);
-        window.minSize = new Vector2(600, 580);
-        window.maxSize = new Vector2(600, 580);
+        CP_PackageForge window = GetWindow<CP_PackageForge>("Package Forge");
+        window.titleContent = new GUIContent("Package Forge", EditorGUIUtility.ObjectContent(CreateInstance<CP_PackageForge>(), typeof(CP_PackageForge)).image);
     }
 
     private void OnGUI()
@@ -48,152 +52,176 @@ public class CP_PackageBuild : EditorWindow
         EditorGUILayout.BeginHorizontal();
         GUI.backgroundColor = headerColor;
         GUILayout.FlexibleSpace();
-        GUILayout.Box("COBA PLATINUM TOOLS - PACKAGE BUILD", headerStyle, GUILayout.Width(Screen.width));
+        GUILayout.Box("COBA PLATINUM TOOLS - PACKAGE FORGE", headerStyle, GUILayout.Width(Screen.width));
         GUILayout.FlexibleSpace();
         GUI.backgroundColor = Color.white;
         EditorGUILayout.EndHorizontal();
-        if (GUILayout.Button("Add Compression DLL"))
+        /*if (GUILayout.Button("Add Compression DLL"))
         {
             File.WriteAllText(Application.dataPath + "/csc.rsp", "-r:System.IO.Compression.FileSystem.dll");
             EditorUtility.DisplayDialog("Added missing DLL!", "Added missing DLL: System.IO.Compression.FileSystem.dll", "Ok");
-        }
-        EditorGUILayout.Space();
+        }*/
 
-        EditorGUILayout.BeginHorizontal("box");
-        GUILayout.Label("PACKAGE DETAILS", EditorStyles.largeLabel);
+        EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+        if (GUILayout.Button("Build Settings", EditorStyles.toolbarButton))
+            tab = 0;
+        if (GUILayout.Button("Build Version", EditorStyles.toolbarButton))
+            tab = 1;
+        if (GUILayout.Button("Tool Settings", EditorStyles.toolbarButton))
+            tab = 2;
         EditorGUILayout.EndHorizontal();
 
-        EditorGUILayout.BeginVertical("box");
-        EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.PrefixLabel("Package Name");
-        packageBuildData.packageName = EditorGUILayout.TextField(packageBuildData.packageName);
-        EditorGUILayout.EndHorizontal();
-        EditorGUILayout.Popup("Package build for", 0, new string[] { "Coba Platinum Patcher" });
-        EditorGUILayout.EndVertical();
-
-        EditorGUILayout.Space();
-
-        EditorGUILayout.BeginHorizontal("box");
-        GUILayout.Label("PACKAGE MANIFEST", EditorStyles.largeLabel);
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.BeginVertical("box");
-        packageBuildData.packageManifestAsset = (PackageManifestAsset)EditorGUILayout.ObjectField("Package Manifest Asset", packageBuildData.packageManifestAsset, typeof(PackageManifestAsset), false);
-        EditorGUILayout.EndVertical();
-
-        EditorGUILayout.Space();
-
-        EditorGUILayout.BeginHorizontal("box");
-        GUILayout.Label("BUILD VERSION", EditorStyles.largeLabel);
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.BeginVertical("box");
-
-        int autoIncrement = 0;
-        if (packageBuildData.autoIncrement)
-            autoIncrement = 0;
-        else
-            autoIncrement = 1;
-
-        autoIncrement = EditorGUILayout.Popup("Build Incrementing", autoIncrement, new string[] { "Automatic", "Manual" });
-
-        if (autoIncrement == 0)
-            packageBuildData.autoIncrement = true;
-        else
-            packageBuildData.autoIncrement = false;
-
-        CP_BuildVersionProcessor.autoIncrement = packageBuildData.autoIncrement;
-
-        if (!packageBuildData.autoIncrement)
+        switch(tab)
         {
-            EditorGUILayout.Space();
+            case 0:
+                DrawBuildSettings();
+                break;
+            case 1:
+                DrawVersionSettings(); 
+                break;
+            case 2:
 
-            EditorGUILayout.HelpBox("The current build version will not automatically update as long as 'Build Incrementing' is set to 'Manual'! " +
-                "Set 'Build Incrementing' to 'Automatic' if you would like the version to dynamically update when you build the project!", MessageType.Warning);
+                break;
+            default:
+
+                break;
         }
 
-        EditorGUILayout.Space();
+        GUI.Box(new Rect(0, position.height - 20, position.width, 20), "", EditorStyles.toolbar);
+        GUI.Button(new Rect(position.width - 230, position.height - 20, 40, 20), "Build", EditorStyles.toolbarButton);
+        GUI.Button(new Rect(position.width - 190, position.height - 20, 60, 20), "Package", EditorStyles.toolbarButton);
+        GUI.Button(new Rect(position.width - 130, position.height - 20, 120, 20), "Build and Package", EditorStyles.toolbarButton);
 
-        EditorGUILayout.LabelField("Current Build Version - Major.Minor.Patch");
-        EditorGUILayout.BeginHorizontal();
-        if (!packageBuildData.autoIncrement)
-        {
-            packageBuildData.currentVersion[0] = EditorGUILayout.IntField(packageBuildData.currentVersion[0]);
-            packageBuildData.currentVersion[1] = EditorGUILayout.IntField(packageBuildData.currentVersion[1]);
-            packageBuildData.currentVersion[2] = EditorGUILayout.IntField(packageBuildData.currentVersion[2]);
-            if (GUILayout.Button("Set Version"))
-            {
-                CP_BuildVersionProcessor.SetVersion(packageBuildData.currentVersion);
-            }
-        }
-        else
-        {
-            packageBuildData.currentVersion = CP_BuildVersionProcessor.FindCurrentVersion();
-
-            EditorGUILayout.IntField(packageBuildData.currentVersion[0]);
-            EditorGUILayout.IntField(packageBuildData.currentVersion[1]);
-            EditorGUILayout.IntField(packageBuildData.currentVersion[2]);
-        }
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.Space();
-
-        if (packageBuildData.autoIncrement)
-            packageBuildData.versionBuildLevel = (VersionBuildType)EditorGUILayout.EnumPopup("Version Build Level", packageBuildData.versionBuildLevel);
-
-        CP_BuildVersionProcessor.buildType = packageBuildData.versionBuildLevel;
-
-        packageBuildData.versionDevStage = (VersionDevStage)EditorGUILayout.EnumPopup("Version Build Stage", packageBuildData.versionDevStage);
-        CP_BuildVersionProcessor.devStage = packageBuildData.versionDevStage;
-
-        packageBuildData.isDevBuild = EditorGUILayout.Toggle("Version is DEV build", packageBuildData.isDevBuild);
-        CP_BuildVersionProcessor.devBuild = packageBuildData.isDevBuild;
-
-        EditorGUILayout.EndVertical();
-
-        EditorGUILayout.Space();
-
-        EditorGUILayout.BeginHorizontal("box");
-        GUILayout.Label("BUILD DETAILS", EditorStyles.largeLabel);
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.BeginVertical("box");
-
-        EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.PrefixLabel("Project Build Location");
-        packageBuildData.buildPath = EditorGUILayout.TextField(packageBuildData.buildPath);
-        if (GUILayout.Button("Browse"))
-        {
-            packageBuildData.buildPath = EditorUtility.OpenFolderPanel("Select Build Folder", "", "");
-        }
-        EditorGUILayout.EndHorizontal();
-        EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.PrefixLabel("Create Package Location");
-        packageBuildData.packagePath = EditorGUILayout.TextField(packageBuildData.packagePath);
-        if (GUILayout.Button("Browse"))
-        {
-            packageBuildData.packagePath = EditorUtility.OpenFolderPanel("Select Package Folder", "", "");
-        }
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.EndVertical();
-
-        EditorGUILayout.Space();
-
-        EditorGUILayout.BeginHorizontal("box");
-        GUILayout.Label("PACKAGE OPTIONS", EditorStyles.largeLabel);
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.BeginVertical("box");
-        EditorGUILayout.BeginHorizontal();
-        if (GUILayout.Button("Package Existing Build"))
-        {
-            PackageBuild();
-        }
-        EditorGUILayout.EndHorizontal();
-        EditorGUILayout.EndVertical();
+        
 
         EditorUtility.SetDirty(packageBuildData);
+    }
+
+    private void DrawVersionSettings()
+    {
+        EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+        if (GUILayout.Button("BUILD VERSION MANAGEMENT", EditorStyles.toolbarDropDown))
+            showBuildVersion = !showBuildVersion;
+        EditorGUILayout.EndHorizontal();
+
+        if (showBuildVersion)
+        {
+            EditorGUILayout.BeginVertical("box");
+
+            int autoIncrement = 0;
+            if (packageBuildData.autoIncrement)
+                autoIncrement = 0;
+            else
+                autoIncrement = 1;
+
+            autoIncrement = EditorGUILayout.Popup("Build Incrementing", autoIncrement, new string[] { "Automatic", "Manual" });
+
+            if (autoIncrement == 0)
+                packageBuildData.autoIncrement = true;
+            else
+                packageBuildData.autoIncrement = false;
+
+            CP_BuildVersionProcessor.autoIncrement = packageBuildData.autoIncrement;
+
+            if (!packageBuildData.autoIncrement)
+            {
+                EditorGUILayout.Space();
+
+                EditorGUILayout.HelpBox("The current build version will not automatically update as long as 'Build Incrementing' is set to 'Manual'! " +
+                    "Set 'Build Incrementing' to 'Automatic' if you would like the version to dynamically update when you build the project!", MessageType.Warning);
+            }
+
+            EditorGUILayout.Space();
+
+            EditorGUILayout.LabelField("Current Build Version - Major.Minor.Patch");
+            EditorGUILayout.BeginHorizontal();
+            if (!packageBuildData.autoIncrement)
+            {
+                packageBuildData.currentVersion[0] = EditorGUILayout.IntField(packageBuildData.currentVersion[0]);
+                packageBuildData.currentVersion[1] = EditorGUILayout.IntField(packageBuildData.currentVersion[1]);
+                packageBuildData.currentVersion[2] = EditorGUILayout.IntField(packageBuildData.currentVersion[2]);
+                if (GUILayout.Button("Set Version"))
+                {
+                    CP_BuildVersionProcessor.SetVersion(packageBuildData.currentVersion);
+                }
+            }
+            else
+            {
+                packageBuildData.currentVersion = CP_BuildVersionProcessor.FindCurrentVersion();
+
+                EditorGUILayout.IntField(packageBuildData.currentVersion[0]);
+                EditorGUILayout.IntField(packageBuildData.currentVersion[1]);
+                EditorGUILayout.IntField(packageBuildData.currentVersion[2]);
+            }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space();
+
+            if (packageBuildData.autoIncrement)
+                packageBuildData.versionBuildLevel = (VersionBuildType)EditorGUILayout.EnumPopup("Version Build Level", packageBuildData.versionBuildLevel);
+
+            CP_BuildVersionProcessor.buildType = packageBuildData.versionBuildLevel;
+
+            packageBuildData.versionDevStage = (VersionDevStage)EditorGUILayout.EnumPopup("Version Build Stage", packageBuildData.versionDevStage);
+            CP_BuildVersionProcessor.devStage = packageBuildData.versionDevStage;
+
+            packageBuildData.isDevBuild = EditorGUILayout.Toggle("Version is DEV build", packageBuildData.isDevBuild);
+            CP_BuildVersionProcessor.devBuild = packageBuildData.isDevBuild;
+
+            EditorGUILayout.EndVertical();
+        }
+    }
+
+    private void DrawBuildSettings()
+    {
+        EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+        if (GUILayout.Button("PACKAGE DETAILS", EditorStyles.toolbarDropDown))
+            showPackageDetails = !showPackageDetails;
+        EditorGUILayout.EndHorizontal();
+
+        if (showPackageDetails)
+        {
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("Package Name");
+            packageBuildData.packageName = EditorGUILayout.TextField(packageBuildData.packageName);
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Popup("Package Type", 0, new string[] { "Coba Platinum Patcher", "Standalone" });
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.BeginVertical("box");
+            packageBuildData.packageManifestAsset = (PackageManifestAsset)EditorGUILayout.ObjectField("Package Manifest Asset", packageBuildData.packageManifestAsset, typeof(PackageManifestAsset), false);
+            EditorGUILayout.EndVertical();
+        }
+
+        EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+        if (GUILayout.Button("DIRECTORIES", EditorStyles.toolbarDropDown))
+            showBuildDetails = !showBuildDetails;
+        EditorGUILayout.EndHorizontal();
+
+        if (showBuildDetails)
+        {
+            EditorGUILayout.BeginVertical("box");
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("Project Build Location");
+            packageBuildData.buildPath = EditorGUILayout.TextField(packageBuildData.buildPath);
+            if (GUILayout.Button("Browse"))
+            {
+                packageBuildData.buildPath = EditorUtility.OpenFolderPanel("Select Build Folder", "", "");
+            }
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("Create Package Location");
+            packageBuildData.packagePath = EditorGUILayout.TextField(packageBuildData.packagePath);
+            if (GUILayout.Button("Browse"))
+            {
+                packageBuildData.packagePath = EditorUtility.OpenFolderPanel("Select Package Folder", "", "");
+            }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.EndVertical();
+        }
     }
 
     private void PackageBuild()
