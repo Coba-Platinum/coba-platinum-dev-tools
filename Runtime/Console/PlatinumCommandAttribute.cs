@@ -45,4 +45,26 @@ namespace CobaPlatinum.DebugTools.Console
             aliases = _aliases;
         }
     }
+
+    public class PlatinumCommandQuickActionAttribute : Attribute
+    {
+        public string quickActionName;
+        public string quickActionCommand;
+
+        public PlatinumCommandQuickActionAttribute(string _quickActionName, string _quickActionCommand)
+        {
+            quickActionName = _quickActionName;
+            quickActionCommand = _quickActionCommand;
+        }
+
+        public PlatinumCommandQuickActionAttribute(string _quickActionName)
+        {
+            quickActionName = _quickActionName;
+        }
+
+        public PlatinumCommandQuickActionAttribute()
+        {
+
+        }
+    }
 }

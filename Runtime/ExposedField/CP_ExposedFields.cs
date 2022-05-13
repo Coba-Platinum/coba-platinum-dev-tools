@@ -10,9 +10,9 @@ using CobaPlatinum.TextUtilities;
 
 public class CP_ExposedFields
 {
-    public static List<ExposedFieldInfo> exposedMembers { get; private set; } = new List<ExposedFieldInfo>();
-    public static List<TrackedExposedField> trackedFields { get; private set; } = new List<TrackedExposedField>();
-    public static List<string> exposedMemberObjects { get; private set; } = new List<string>();
+    public static List<ExposedFieldInfo> ExposedMembers { get; private set; } = new List<ExposedFieldInfo>();
+    public static List<TrackedExposedField> TrackedFields { get; private set; } = new List<TrackedExposedField>();
+    public static List<string> ExposedMemberObjects { get; private set; } = new List<string>();
     public int cachedExposedFields;
 
     public CP_ExposedFields()
@@ -20,8 +20,14 @@ public class CP_ExposedFields
         ReCacheFields();
     }
 
-    private void ReCacheFields()
+    public void ReCacheFields()
     {
+        ExposedMembers = new List<ExposedFieldInfo>();
+        TrackedFields = new List<TrackedExposedField>();
+        ExposedMemberObjects = new List<string>();
+
+        cachedExposedFields = 0;
+        
         Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
         foreach (Assembly assembly in assemblies)
@@ -39,7 +45,7 @@ public class CP_ExposedFields
                     {
                         if (attribute != null)
                         {
-                            exposedMembers.Add(new ExposedFieldInfo(member, attribute));
+                            ExposedMembers.Add(new ExposedFieldInfo(member, attribute));
                             cachedExposedFields++;
                         }
                     }
@@ -52,9 +58,9 @@ public class CP_ExposedFields
 
     public static void UpdateCachedFieldValues()
     {
-        trackedFields.Clear();
+        TrackedFields.Clear();
 
-        foreach (ExposedFieldInfo member in CP_ExposedFields.exposedMembers)
+        foreach (ExposedFieldInfo member in CP_ExposedFields.ExposedMembers)
         {
             MemberInfo memberInfo = member.memberInfo;
             ExposedFieldAttribute attribute = member.exposedFieldAttribute;
@@ -80,14 +86,14 @@ public class CP_ExposedFields
                                 value = obj.ToString();
                             }
 
-                            trackedFields.Add(new TrackedExposedField(instance_class.name, member.exposedFieldAttribute.displayName, value, obj.GetType().Name));
+                            TrackedFields.Add(new TrackedExposedField(instance_class.name, member.exposedFieldAttribute.displayName, value, obj.GetType().Name));
                         }
                     }
                 }
             }
             else
             {
-                trackedFields.Add(new TrackedExposedField("Unknown", member.exposedFieldAttribute.displayName, "", ""));
+                TrackedFields.Add(new TrackedExposedField("Unknown", member.exposedFieldAttribute.displayName, "", ""));
             }
         }
     }
@@ -95,7 +101,7 @@ public class CP_ExposedFields
     public static List<TrackedExposedField> GetTrackedFieldsFromObject(string _object)
     {
         List<TrackedExposedField> trackedFields = new List<TrackedExposedField>();
-        foreach (TrackedExposedField field in CP_ExposedFields.trackedFields)
+        foreach (TrackedExposedField field in CP_ExposedFields.TrackedFields)
         {
             if (field.fieldObject.Equals(_object))
             {
@@ -108,8 +114,8 @@ public class CP_ExposedFields
 
     public static void AddExposedMemberObject(string _objectName)
     {
-        if(!exposedMemberObjects.Contains(_objectName))
-            exposedMemberObjects.Add(_objectName);
+        if(!ExposedMemberObjects.Contains(_objectName))
+            ExposedMemberObjects.Add(_objectName);
     }
 }
 

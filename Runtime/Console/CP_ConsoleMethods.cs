@@ -11,9 +11,12 @@ using CobaPlatinum.TextUtilities;
 public class CP_ConsoleMethods
 {
     public static List<PlatinumCommand> Commands { get; private set; } = new List<PlatinumCommand>();
+    public static List<PlatinumQuickAction> QuickActions { get; private set; } = new List<PlatinumQuickAction>();
     private static List<string> methodNames = new List<string>();
     public static int cachedSignatures = 0;
     public static int cachedAliases = 0;
+    public static int cachedQuickActions = 0;
+
     public CP_ConsoleMethods()
     {
         ReCacheMethods();
@@ -27,7 +30,12 @@ public class CP_ConsoleMethods
     public void ReCacheMethods()
     {
         Commands = new List<PlatinumCommand>();
+        QuickActions = new List<PlatinumQuickAction>();
         methodNames = new List<string>();
+
+        cachedSignatures = 0;
+        cachedAliases = 0;
+        cachedQuickActions = 0;
 
         MonoBehaviour[] sceneActive = UnityEngine.Object.FindObjectsOfType<MonoBehaviour>();
 
@@ -39,6 +47,7 @@ public class CP_ConsoleMethods
         CP_DebugWindow.Instance.LogConsoleMessage("CP Console methods cached. Total commands cached: " + TextUtils.ColoredText(Commands.Count, Color.green), LogType.Log, CP_DebugWindow.Instance.PLATINUM_CONSOLE_TAG);
         CP_DebugWindow.Instance.LogConsoleMessage("CP Console method signatures cached. Total signatures cached: " + TextUtils.ColoredText(cachedSignatures, Color.green), LogType.Log, CP_DebugWindow.Instance.PLATINUM_CONSOLE_TAG);
         CP_DebugWindow.Instance.LogConsoleMessage("CP Console aliases cached. Total aliases cached: " + TextUtils.ColoredText(cachedAliases, Color.green), LogType.Log, CP_DebugWindow.Instance.PLATINUM_CONSOLE_TAG);
+        CP_DebugWindow.Instance.LogConsoleMessage("CP Console quick actions cached. Total quick actions cached: " + TextUtils.ColoredText(cachedQuickActions, Color.green), LogType.Log, CP_DebugWindow.Instance.PLATINUM_CONSOLE_TAG);
     }
 
     public static void AddObjectMethodsToTerminal(MonoBehaviour mono)
@@ -81,6 +90,20 @@ public class CP_ConsoleMethods
                 {
                     Commands[methodNames.IndexOf(attribute.commandName)].AddAliases(aliasAttribute.aliases);
                     cachedAliases += aliasAttribute.aliases.Length;
+                }
+
+                //Add a quick action
+                if (Attribute.GetCustomAttribute(methodFields[i], typeof(PlatinumCommandQuickActionAttribute)) is PlatinumCommandQuickActionAttribute quickActionAttribute)
+                {
+                    if (quickActionAttribute.quickActionName == null)
+                        quickActionAttribute.quickActionName = methodFields[i].Name;
+
+                    if (quickActionAttribute.quickActionCommand == null)
+                        quickActionAttribute.quickActionCommand = attribute.commandName;
+
+                    PlatinumQuickAction newQuickAction = new PlatinumQuickAction(quickActionAttribute.quickActionName, quickActionAttribute.quickActionCommand);
+                    QuickActions.Add(newQuickAction);
+                    cachedQuickActions++;
                 }
             }
         }
@@ -131,7 +154,7 @@ public class PlatinumCommand
         }
     }
 
-    public bool IsAnAlias(string _command)
+    public bool HasAlias(string _command)
     {
         for (int i = 0; i < commandAliases.Count; i++)
         {
@@ -151,5 +174,17 @@ public class PlatinumCommand
         }
 
         return commandFormat;
+    }
+}
+
+public struct PlatinumQuickAction
+{
+    public string quickActionName;
+    public string quickActionCommand;
+
+    public PlatinumQuickAction(string _quickActionName, string _quickActionCommand)
+    {
+        quickActionName = _quickActionName;
+        quickActionCommand = _quickActionCommand;
     }
 }

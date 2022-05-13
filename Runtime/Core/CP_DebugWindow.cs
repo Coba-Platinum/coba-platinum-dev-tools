@@ -14,8 +14,6 @@ namespace CobaPlatinum.DebugTools
 {
     public class CP_DebugWindow : MonoBehaviour
     {
-        private string version = "0.1.6";
-
         #region Singleton
 
         public static CP_DebugWindow Instance;
@@ -90,6 +88,31 @@ namespace CobaPlatinum.DebugTools
                 InitializeDebugWindow();
         }
 
+        [PlatinumCommand("ReCache-Commands")]
+        [PlatinumCommandDescription("Re-cache and regenerate all commands and quick actions for the debug console.")]
+        [PlatinumCommandQuickAction("Re-Cache Commands")]
+        public void ReCacheCommands()
+        {
+            platinumConsoleMethods.ReCacheMethods();
+        }
+
+        [PlatinumCommand("ReCache-Variables")]
+        [PlatinumCommandDescription("Re-cache all exposed variables for the debug console.")]
+        [PlatinumCommandQuickAction("Re-Cache Variables")]
+        public void ReCacheExposedVariables()
+        {
+            exposedFields.ReCacheFields();
+        }
+
+        [PlatinumCommand("ReCache-All")]
+        [PlatinumCommandDescription("Re-cache all exposed variables for the debug console and re-cache and regenerate all commands and quick actions for the debug console.")]
+        [PlatinumCommandQuickAction("Re-Cache All")]
+        public void ReCacheAll()
+        {
+            platinumConsoleMethods.ReCacheMethods();
+            exposedFields.ReCacheFields();
+        }
+
         public void SendCommand()
         {
             if (showDebugWindow && GUI.GetNameOfFocusedControl().Equals("DebugCommandField"))
@@ -104,7 +127,7 @@ namespace CobaPlatinum.DebugTools
             if (showDebugWindow)
             {
                 // Register the window. Notice the 3rd parameter
-                windowRect = GUI.Window(0, windowRect, DrawDebugWindow, "Coba Platinum Debug Window v" + version);
+                windowRect = GUI.Window(0, windowRect, DrawDebugWindow, "Coba Platinum Debug Window");
             }
 
             if (Event.current.Equals(Event.KeyboardEvent("None")))
@@ -136,9 +159,13 @@ namespace CobaPlatinum.DebugTools
             {
                 tabIndex = 1;
             }
-            if (GUILayout.Button("Settings"))
+            if (GUILayout.Button("Quick Actions"))
             {
                 tabIndex = 2;
+            }
+            if (GUILayout.Button("Settings"))
+            {
+                tabIndex = 3;
             }
             GUILayout.EndHorizontal();
 
@@ -151,6 +178,9 @@ namespace CobaPlatinum.DebugTools
                     DrawExposedVariables();
                     break;
                 case 2:
+                    DrawQuickActions();
+                    break;
+                case 3:
                     DrawDebugSettings();
                     break;
                 default:
@@ -216,7 +246,7 @@ namespace CobaPlatinum.DebugTools
 
             int index = 0;
 
-            foreach(string exposedObject in CP_ExposedFields.exposedMemberObjects)
+            foreach(string exposedObject in CP_ExposedFields.ExposedMemberObjects)
             {
                 Rect labelRect = new Rect(15, scrollViewContentRect.y + (20 * index), scrollViewContentRect.width, 20);
                 GUI.Label(labelRect, $"[{TextUtils.ColoredText("GameObject", Color.green)} - {exposedObject}]:");
@@ -229,6 +259,32 @@ namespace CobaPlatinum.DebugTools
                     GUI.Label(labelFieldRect, $"    - [{TextUtils.ColoredText(field.fieldName, Color.cyan)}:{field.fieldType}]  Value: {TextUtils.ColoredText(field.fieldValue, Color.magenta)}");
                     index++;
                 }
+            }
+
+            GUI.EndScrollView();
+        }
+
+        public void DrawQuickActions()
+        {
+            GUI.Label(new Rect(10, 60, 800, 20), "Quick Actions:");
+
+            Rect scrollViewRect = new Rect(10, 80, windowRect.width - 20, windowRect.height - 120);
+            Rect scrollViewContentRect = new Rect(scrollViewRect.x, scrollViewRect.y, scrollViewRect.width, 20 * consoleMessages.Count);
+
+            GUI.Box(new Rect(scrollViewRect.x, scrollViewRect.y, scrollViewRect.width - 20, scrollViewRect.height), "");
+
+            fieldsScrollPosition = GUI.BeginScrollView(scrollViewRect, fieldsScrollPosition, scrollViewRect, false, true, GUIStyle.none, GUI.skin.verticalScrollbar);
+
+            int index = 0;
+
+            foreach(PlatinumQuickAction quickAction in CP_ConsoleMethods.QuickActions)
+            {
+                Rect buttonRect = new Rect(15, scrollViewContentRect.y + (22 * index), scrollViewContentRect.width - 30, 20);
+                if(GUI.Button(buttonRect, quickAction.quickActionName))
+                {
+                    ExecuteCommand(quickAction.quickActionCommand);
+                }
+                index++;
             }
 
             GUI.EndScrollView();
@@ -359,7 +415,7 @@ namespace CobaPlatinum.DebugTools
                 args.RemoveAt(0);
                 foreach (var method in CP_ConsoleMethods.Commands)
                 {
-                    if (method.IsAnAlias(command))
+                    if (method.HasAlias(command))
                     {
                         if (registered)
                             LogConsoleMessage("Multiple commands are defined with: " + command, LogType.Error, PLATINUM_CONSOLE_TAG);
@@ -453,6 +509,7 @@ namespace CobaPlatinum.DebugTools
         }
 
         [PlatinumCommand("Clear", "Clear the debug console.")]
+        [PlatinumCommandQuickAction("Clear Console")]
         public void ClearConsole()
         {
             consoleMessages.Clear();
@@ -475,7 +532,7 @@ namespace CobaPlatinum.DebugTools
         {
             foreach (var method in CP_ConsoleMethods.Commands)
             {
-                if (method.IsAnAlias(command))
+                if (method.HasAlias(command))
                 {
                     LogTaglessConsoleMessage("----------------------");
                     LogTaglessConsoleMessage("Generated command help for " + TextUtils.ColoredText(command, Color.green));

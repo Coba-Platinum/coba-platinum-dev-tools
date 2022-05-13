@@ -10,6 +10,7 @@ namespace CobaPlatinum.DebugTools.Console.DefaultCommands
     {
         [PlatinumCommand("Time-Scale")]
         [PlatinumCommandDescription("Set the current time scale within the game.")]
+        [PlatinumCommandQuickAction("Print Time-Scale")]
         public void GetTimeScale()
         {
             CP_DebugWindow.ConsoleLog(TextUtils.ColoredText(Time.timeScale.ToString(), Color.green));
