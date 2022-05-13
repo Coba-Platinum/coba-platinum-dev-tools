@@ -1,10 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 using CobaPlatinum.DebugTools.Console;
 using CobaPlatinum.TextUtilities;
@@ -57,6 +57,11 @@ namespace CobaPlatinum.DebugTools
         [SerializeField] private CP_ConsoleMethods platinumConsoleMethods;
         [SerializeField] private CP_ExposedFields exposedFields;
 
+        [SerializeField] private List<SuggestedCommand> suggestedCommands;
+        [SerializeField] private int selectedSuggestion = 0;
+
+        private Keyboard kb;
+
         public void Initialize()
         {
             DontDestroyOnLoad(this);
@@ -68,6 +73,8 @@ namespace CobaPlatinum.DebugTools
         private void Start()
         {
             InitializeDebugWindow();
+
+            kb = InputSystem.GetDevice<Keyboard>();
         }
 
         private void FixedUpdate()
@@ -115,10 +122,39 @@ namespace CobaPlatinum.DebugTools
 
         public void SendCommand()
         {
-            if (showDebugWindow && GUI.GetNameOfFocusedControl().Equals("DebugCommandField"))
+            if (showDebugWindow)
             {
                 ExecuteCommand(consoleInput);
                 consoleInput = "";
+            }
+        }
+
+        public void Update()
+        {
+            if (kb.f12Key.wasPressedThisFrame)
+            {
+                ToggleConsole();
+            }
+
+            if (kb.upArrowKey.wasPressedThisFrame)
+            {
+                selectedSuggestion++;
+            }
+
+            if (kb.downArrowKey.wasPressedThisFrame)
+            {
+                selectedSuggestion--;
+            }
+
+            if (kb.enterKey.wasPressedThisFrame)
+            {
+                SendCommand();
+            }
+
+            if (kb.tabKey.wasPressedThisFrame)
+            {
+                consoleInput = suggestedCommands[selectedSuggestion].commandName;
+                selectedSuggestion = 0;
             }
         }
 
@@ -130,15 +166,10 @@ namespace CobaPlatinum.DebugTools
                 windowRect = GUI.Window(0, windowRect, DrawDebugWindow, "Coba Platinum Debug Window");
             }
 
-            if (Event.current.Equals(Event.KeyboardEvent("None")))
+            /*if (Event.current.Equals(Event.KeyboardEvent("None")))
             {
                 SendCommand();
-            }
-
-            if (Event.current.Equals(Event.KeyboardEvent("f12")))
-            {
-                ToggleConsole();
-            }
+            }*/
         }
 
         private void DrawDebugWindow(int windowID)
@@ -230,6 +261,48 @@ namespace CobaPlatinum.DebugTools
             if (GUI.Button(new Rect(windowRect.width - 170, Screen.height - 71, 160, 21), "Send Command"))
             {
                 SendCommand();
+            }
+
+            if(consoleInput != null && !consoleInput.Equals(""))
+                DrawCommandSuggestions();
+        }
+
+        public void DrawCommandSuggestions()
+        {
+            suggestedCommands = new List<SuggestedCommand>();
+
+            foreach (PlatinumCommand command in CP_ConsoleMethods.Commands)
+            {
+                if (command.commandName.ToLower().StartsWith(consoleInput.ToLower()) && !command.commandName.ToLower().Equals(consoleInput.ToLower()))
+                {
+                    for (int i = 0; i < command.commandSignatures.Count; i++)
+                    {
+                        suggestedCommands.Add(new SuggestedCommand(command.commandName, command.commandName + command.GetArguments(i).ToString()));
+                    }
+                }
+            }
+
+            Rect commandSuggestionsRect = new Rect(10, Screen.height - 80 - (20 * suggestedCommands.Count), windowRect.width - 190, (20 * suggestedCommands.Count));
+
+            GUI.Box(new Rect(commandSuggestionsRect.x, commandSuggestionsRect.y, commandSuggestionsRect.width, commandSuggestionsRect.height), "");
+
+            for (int i = suggestedCommands.Count - 1; i >= 0; i--)
+            {
+                Rect labelRect = new Rect(15, commandSuggestionsRect.y - 20 + (20 * (suggestedCommands.Count - i)), commandSuggestionsRect.width, 20);
+                if (selectedSuggestion == i)
+                    GUI.Label(labelRect, TextUtils.ColoredText(suggestedCommands[i].commandSignature, Color.green));
+                else
+                    GUI.Label(labelRect, suggestedCommands[i].commandSignature);
+            }
+
+            if (selectedSuggestion > suggestedCommands.Count - 1)
+            {
+                selectedSuggestion = 0;
+            }
+
+            if (selectedSuggestion < 0)
+            {
+                selectedSuggestion = suggestedCommands.Count - 1;
             }
         }
 
@@ -413,7 +486,7 @@ namespace CobaPlatinum.DebugTools
                 args = _command.Split(new char[] { ' ' }).ToList();
                 command = args[0].ToLower();
                 args.RemoveAt(0);
-                foreach (var method in CP_ConsoleMethods.Commands)
+                foreach (PlatinumCommand method in CP_ConsoleMethods.Commands)
                 {
                     if (method.HasAlias(command))
                     {
@@ -611,6 +684,18 @@ namespace CobaPlatinum.DebugTools
         {
             tagLabel = _tag;
             tagColor = _color;
+        }
+    }
+
+    public struct SuggestedCommand
+    {
+        public string commandName;
+        public string commandSignature;
+
+        public SuggestedCommand(string _commandName, string _commandSignature)
+        {
+            commandName = _commandName;
+            commandSignature = _commandSignature;
         }
     }
 }
