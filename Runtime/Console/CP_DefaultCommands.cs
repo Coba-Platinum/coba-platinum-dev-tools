@@ -8,15 +8,15 @@ namespace CobaPlatinum.DebugTools.Console.DefaultCommands
 {
     public class CP_DefaultCommands : MonoBehaviour
     {
-        [PlatinumCommand("Time-Scale")]
-        [PlatinumCommandDescription("Set the current time scale within the game.")]
-        [PlatinumCommandQuickAction("Print Time-Scale")]
+        [PC_Command("Time-Scale")]
+        [PC_CommandDescription("Set the current time scale within the game.")]
+        [PC_CommandQuickAction("Print Time-Scale")]
         public void GetTimeScale()
         {
             CP_DebugWindow.ConsoleLog(TextUtils.ColoredText(Time.timeScale.ToString(), Color.green));
         }
 
-        [PlatinumCommand("Time-Scale")]
+        [PC_Command("Time-Scale")]
         public void SetTimeScale(float timeScale)
         {
             Time.timeScale = timeScale;

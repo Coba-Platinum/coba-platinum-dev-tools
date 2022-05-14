@@ -17,6 +17,7 @@ public class CP_DebugWindowEditor : Editor
     private bool showConsoleTests = false;
 
     SerializedProperty m_ShowDebugWindow;
+    SerializedProperty m_DebugWindowAlignment;
     SerializedProperty m_TabIndex;
     SerializedProperty m_WindowRect;
     SerializedProperty m_MaxConsoleMessages;
@@ -36,6 +37,7 @@ public class CP_DebugWindowEditor : Editor
         m_MaxConsoleMessages = serializedObject.FindProperty("maxConsoleMessages");
         m_UnityTag = serializedObject.FindProperty("UNITY_TAG");
         m_ConsoleTag = serializedObject.FindProperty("PLATINUM_CONSOLE_TAG");
+        m_DebugWindowAlignment = serializedObject.FindProperty("alignment");
     }
 
     public override void OnInspectorGUI()
@@ -54,10 +56,9 @@ public class CP_DebugWindowEditor : Editor
         GUILayout.FlexibleSpace();
         GUI.backgroundColor = Color.white;
         EditorGUILayout.EndHorizontal();
-        EditorGUILayout.Space();
 
-        EditorGUILayout.BeginVertical("box");
-        currentTab = GUILayout.Toolbar(currentTab, new string[] { "Debug Window", "Debug Console", "Exposed Variables", "Settings" });
+        EditorGUILayout.BeginVertical(EditorStyles.toolbar);
+        currentTab = GUILayout.Toolbar(currentTab, new string[] { "Debug Window", "Debug Console", "Exposed Variables", "Settings" }, EditorStyles.toolbarButton);
         EditorGUILayout.EndVertical();
 
         switch (currentTab)
@@ -165,17 +166,6 @@ public class CP_DebugWindowEditor : Editor
         }
 
         EditorGUILayout.EndVertical();
-
-        EditorGUILayout.BeginVertical("box");
-        GUILayout.Label("Debug Console Commands", EditorStyles.boldLabel);
-
-        EditorGUILayout.Space();
-        if (GUILayout.Button("Add Default Commands"))
-        {
-            CP_DefaultCommands defaultCommandsComponent = ObjectFactory.AddComponent<CP_DefaultCommands>(targetObject.gameObject);
-        }
-
-        EditorGUILayout.EndVertical();
     }
 
     private void DrawExposedVariablesInspector()
@@ -183,17 +173,6 @@ public class CP_DebugWindowEditor : Editor
         EditorGUILayout.BeginHorizontal("box");
         GUILayout.Label("DEBUG EXPOSED VARIABLES", EditorStyles.largeLabel);
         EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.BeginVertical("box");
-        GUILayout.Label("Debug Console Exposed Fields", EditorStyles.boldLabel);
-
-        EditorGUILayout.Space();
-        if (GUILayout.Button("Add Default Exposed Fields"))
-        {
-            CP_DefaultExposedFields defaultExposedFieldsComponent = ObjectFactory.AddComponent<CP_DefaultExposedFields>(targetObject.gameObject);
-        }
-
-        EditorGUILayout.EndVertical();
     }
 
     private void DrawSettingsInspector()
@@ -205,6 +184,8 @@ public class CP_DebugWindowEditor : Editor
         EditorGUILayout.BeginVertical("box");
         GUILayout.Label("Debug Window Settings", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(m_WindowRect, new GUIContent("Editor Window Rect"));
+        EditorGUILayout.Space();
+        EditorGUILayout.PropertyField(m_DebugWindowAlignment, new GUIContent("Editor Window Alignment"));
         EditorGUILayout.EndVertical();
     }
 }

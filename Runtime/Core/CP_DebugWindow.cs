@@ -9,9 +9,13 @@ using UnityEngine.InputSystem;
 using CobaPlatinum.DebugTools.Console;
 using CobaPlatinum.TextUtilities;
 using CobaPlatinum.DebugTools.ExposedFields;
+using CobaPlatinum.DebugTools.Console.DefaultCommands;
+using CobaPlatinum.DebugTools.Console.DefaultExposedFields;
 
 namespace CobaPlatinum.DebugTools
 {
+    [RequireComponent(typeof(CP_DefaultCommands))]
+    [RequireComponent(typeof(CP_DefaultExposedFields))]
     public class CP_DebugWindow : MonoBehaviour
     {
         #region Singleton
@@ -35,7 +39,9 @@ namespace CobaPlatinum.DebugTools
 
         [SerializeField][ExposedField("Debug Window Showing")] public bool showDebugWindow = false;
         [SerializeField] private Rect windowRect = new Rect(20, 20, 800, 50);
+        private Rect alignedWindowRect;
         [SerializeField][ExposedField] private int tabIndex = 0;
+        [SerializeField] private DebugWindowAlignment alignment = DebugWindowAlignment.Right;
 
         [SerializeField] private int maxConsoleMessages = 200;
         [SerializeField] private Queue<string> consoleMessages = new Queue<string>();
@@ -84,7 +90,28 @@ namespace CobaPlatinum.DebugTools
 
         void InitializeDebugWindow()
         {
-            windowRect.height = Screen.height - 40;
+            alignedWindowRect = windowRect;
+
+            switch(alignment)
+            {
+                case DebugWindowAlignment.Left:
+                    alignedWindowRect.height = Screen.height - 40;
+                    break;
+                case DebugWindowAlignment.Right:
+                    alignedWindowRect.height = Screen.height - 40;
+                    alignedWindowRect.x = Screen.width - alignedWindowRect.width - windowRect.x;
+                    break;
+                case DebugWindowAlignment.Top:
+                    alignedWindowRect.width = Screen.width - 40;
+                    break;
+                case DebugWindowAlignment.Bottom:
+                    alignedWindowRect.width = Screen.width - 40;
+                    alignedWindowRect.y = Screen.height - alignedWindowRect.height - windowRect.y;
+                    break;
+                default:
+                    alignedWindowRect.height = Screen.height - 40;
+                    break;
+            }
         }
 
         private void ToggleConsole()
@@ -95,25 +122,25 @@ namespace CobaPlatinum.DebugTools
                 InitializeDebugWindow();
         }
 
-        [PlatinumCommand("ReCache-Commands")]
-        [PlatinumCommandDescription("Re-cache and regenerate all commands and quick actions for the debug console.")]
-        [PlatinumCommandQuickAction("Re-Cache Commands")]
+        [PC_Command("ReCache-Commands")]
+        [PC_CommandDescription("Re-cache and regenerate all commands and quick actions for the debug console.")]
+        [PC_CommandQuickAction("Re-Cache Commands")]
         public void ReCacheCommands()
         {
             platinumConsoleMethods.ReCacheMethods();
         }
 
-        [PlatinumCommand("ReCache-Variables")]
-        [PlatinumCommandDescription("Re-cache all exposed variables for the debug console.")]
-        [PlatinumCommandQuickAction("Re-Cache Variables")]
+        [PC_Command("ReCache-Variables")]
+        [PC_CommandDescription("Re-cache all exposed variables for the debug console.")]
+        [PC_CommandQuickAction("Re-Cache Variables")]
         public void ReCacheExposedVariables()
         {
             exposedFields.ReCacheFields();
         }
 
-        [PlatinumCommand("ReCache-All")]
-        [PlatinumCommandDescription("Re-cache all exposed variables for the debug console and re-cache and regenerate all commands and quick actions for the debug console.")]
-        [PlatinumCommandQuickAction("Re-Cache All")]
+        [PC_Command("ReCache-All")]
+        [PC_CommandDescription("Re-cache all exposed variables for the debug console and re-cache and regenerate all commands and quick actions for the debug console.")]
+        [PC_CommandQuickAction("Re-Cache All")]
         public void ReCacheAll()
         {
             platinumConsoleMethods.ReCacheMethods();
@@ -163,7 +190,7 @@ namespace CobaPlatinum.DebugTools
             if (showDebugWindow)
             {
                 // Register the window. Notice the 3rd parameter
-                windowRect = GUI.Window(0, windowRect, DrawDebugWindow, "Coba Platinum Debug Window");
+                alignedWindowRect = GUI.Window(0, alignedWindowRect, DrawDebugWindow, "Coba Platinum Debug Window");
             }
 
             /*if (Event.current.Equals(Event.KeyboardEvent("None")))
@@ -174,7 +201,7 @@ namespace CobaPlatinum.DebugTools
 
         private void DrawDebugWindow(int windowID)
         {
-            if (GUI.Button(new Rect(windowRect.width - 24, 5, 18, 18), ""))
+            if (GUI.Button(new Rect(alignedWindowRect.width - 24, 5, 18, 18), ""))
             {
                 showDebugWindow = false;
             }
@@ -233,9 +260,9 @@ namespace CobaPlatinum.DebugTools
         public void DrawDebugConsole()
         {
             GUI.Label(new Rect(10, 60, 800, 20), "Debug Console: (Type \"commands\" to view a list of all added commands)");
-            autoScroll = GUI.Toggle(new Rect(windowRect.width - 110, 60, 100, 20), autoScroll, "Auto scroll");
+            autoScroll = GUI.Toggle(new Rect(alignedWindowRect.width - 110, 60, 100, 20), autoScroll, "Auto scroll");
 
-            Rect consoleRect = new Rect(10, 80, windowRect.width - 20, windowRect.height - 120);
+            Rect consoleRect = new Rect(10, 80, alignedWindowRect.width - 20, alignedWindowRect.height - 120);
             Rect consoleViewRect = new Rect(consoleRect.x, consoleRect.y, consoleRect.width, 20 * consoleMessages.Count);
 
             GUI.Box(new Rect(consoleRect.x, consoleRect.y, consoleRect.width - 20, consoleRect.height), "");
@@ -256,9 +283,9 @@ namespace CobaPlatinum.DebugTools
             GUI.EndScrollView();
 
             GUI.SetNextControlName("DebugCommandField");
-            consoleInput = GUI.TextField(new Rect(10, Screen.height - 71, windowRect.width - 190, 21), consoleInput);
+            consoleInput = GUI.TextField(new Rect(10, alignedWindowRect.height - 31, alignedWindowRect.width - 190, 21), consoleInput);
 
-            if (GUI.Button(new Rect(windowRect.width - 170, Screen.height - 71, 160, 21), "Send Command"))
+            if (GUI.Button(new Rect(alignedWindowRect.width - 170, alignedWindowRect.height - 31, 160, 21), "Send Command"))
             {
                 SendCommand();
             }
@@ -282,27 +309,30 @@ namespace CobaPlatinum.DebugTools
                 }
             }
 
-            Rect commandSuggestionsRect = new Rect(10, Screen.height - 80 - (20 * suggestedCommands.Count), windowRect.width - 190, (20 * suggestedCommands.Count));
-
-            GUI.Box(new Rect(commandSuggestionsRect.x, commandSuggestionsRect.y, commandSuggestionsRect.width, commandSuggestionsRect.height), "");
-
-            for (int i = suggestedCommands.Count - 1; i >= 0; i--)
+            if (suggestedCommands.Count > 0)
             {
-                Rect labelRect = new Rect(15, commandSuggestionsRect.y - 20 + (20 * (suggestedCommands.Count - i)), commandSuggestionsRect.width, 20);
-                if (selectedSuggestion == i)
-                    GUI.Label(labelRect, TextUtils.ColoredText(suggestedCommands[i].commandSignature, Color.green));
-                else
-                    GUI.Label(labelRect, suggestedCommands[i].commandSignature);
-            }
+                Rect commandSuggestionsRect = new Rect(10, alignedWindowRect.height - 40 - (20 * suggestedCommands.Count), alignedWindowRect.width - 190, (20 * suggestedCommands.Count));
 
-            if (selectedSuggestion > suggestedCommands.Count - 1)
-            {
-                selectedSuggestion = 0;
-            }
+                GUI.Box(new Rect(commandSuggestionsRect.x, commandSuggestionsRect.y, commandSuggestionsRect.width, commandSuggestionsRect.height), "");
 
-            if (selectedSuggestion < 0)
-            {
-                selectedSuggestion = suggestedCommands.Count - 1;
+                for (int i = suggestedCommands.Count - 1; i >= 0; i--)
+                {
+                    Rect labelRect = new Rect(15, commandSuggestionsRect.y - 20 + (20 * (suggestedCommands.Count - i)), commandSuggestionsRect.width, 20);
+                    if (selectedSuggestion == i)
+                        GUI.Label(labelRect, TextUtils.ColoredText(suggestedCommands[i].commandSignature, Color.green));
+                    else
+                        GUI.Label(labelRect, suggestedCommands[i].commandSignature);
+                }
+
+                if (selectedSuggestion > suggestedCommands.Count - 1)
+                {
+                    selectedSuggestion = 0;
+                }
+
+                if (selectedSuggestion < 0)
+                {
+                    selectedSuggestion = suggestedCommands.Count - 1;
+                }
             }
         }
 
@@ -310,7 +340,7 @@ namespace CobaPlatinum.DebugTools
         {
             GUI.Label(new Rect(10, 60, 800, 20), "Exposed Variables:");
 
-            Rect scrollViewRect = new Rect(10, 80, windowRect.width - 20, windowRect.height - 120);
+            Rect scrollViewRect = new Rect(10, 80, alignedWindowRect.width - 20, alignedWindowRect.height - 120);
             Rect scrollViewContentRect = new Rect(scrollViewRect.x, scrollViewRect.y, scrollViewRect.width, 20 * consoleMessages.Count);
 
             GUI.Box(new Rect(scrollViewRect.x, scrollViewRect.y, scrollViewRect.width - 20, scrollViewRect.height), "");
@@ -341,7 +371,7 @@ namespace CobaPlatinum.DebugTools
         {
             GUI.Label(new Rect(10, 60, 800, 20), "Quick Actions:");
 
-            Rect scrollViewRect = new Rect(10, 80, windowRect.width - 20, windowRect.height - 120);
+            Rect scrollViewRect = new Rect(10, 80, alignedWindowRect.width - 20, alignedWindowRect.height - 120);
             Rect scrollViewContentRect = new Rect(scrollViewRect.x, scrollViewRect.y, scrollViewRect.width, 20 * consoleMessages.Count);
 
             GUI.Box(new Rect(scrollViewRect.x, scrollViewRect.y, scrollViewRect.width - 20, scrollViewRect.height), "");
@@ -556,7 +586,7 @@ namespace CobaPlatinum.DebugTools
             }
         }
 
-        [PlatinumCommand("Commands", "Show a list of all possible commands.")]
+        [PC_Command("Commands", "Show a list of all possible commands.")]
         public void PrintCommandList()
         {
             LogTaglessConsoleMessage("------ Commands ------");
@@ -581,15 +611,15 @@ namespace CobaPlatinum.DebugTools
             LogTaglessConsoleMessage("----------------------");
         }
 
-        [PlatinumCommand("Clear", "Clear the debug console.")]
-        [PlatinumCommandQuickAction("Clear Console")]
+        [PC_Command("Clear", "Clear the debug console.")]
+        [PC_CommandQuickAction("Clear Console")]
         public void ClearConsole()
         {
             consoleMessages.Clear();
             LogConsoleMessage("Coba Platinum Console cleared!", LogType.Log, PLATINUM_CONSOLE_TAG);
         }
 
-        [PlatinumCommand()]
+        [PC_Command()]
         public void Help()
         {
             LogTaglessConsoleMessage("----------------------");
@@ -600,7 +630,7 @@ namespace CobaPlatinum.DebugTools
             LogTaglessConsoleMessage("----------------------");
         }
 
-        [PlatinumCommand("Help", "Learn more about a specific command.")]
+        [PC_Command("Help", "Learn more about a specific command.")]
         public void Help(string command)
         {
             foreach (var method in CP_ConsoleMethods.Commands)
@@ -697,5 +727,13 @@ namespace CobaPlatinum.DebugTools
             commandName = _commandName;
             commandSignature = _commandSignature;
         }
+    }
+
+    public enum DebugWindowAlignment
+    {
+        Left,
+        Top,
+        Right,
+        Bottom
     }
 }

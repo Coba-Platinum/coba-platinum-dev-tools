@@ -61,7 +61,7 @@ public class CP_ConsoleMethods
         for (int i = 0; i < methodFields.Length; i++)
         {
             // if we detect any attribute print out the data.
-            if (Attribute.GetCustomAttribute(methodFields[i], typeof(PlatinumCommandAttribute)) is PlatinumCommandAttribute attribute)
+            if (Attribute.GetCustomAttribute(methodFields[i], typeof(PC_CommandAttribute)) is PC_CommandAttribute attribute)
             {
                 if(attribute.commandName == null)
                     attribute.commandName = methodFields[i].Name;
@@ -81,19 +81,19 @@ public class CP_ConsoleMethods
                     cachedSignatures++;
                 }
 
-                if (Attribute.GetCustomAttribute(methodFields[i], typeof(PlatinumCommandDescriptionAttribute)) is PlatinumCommandDescriptionAttribute descAttribute)
+                if (Attribute.GetCustomAttribute(methodFields[i], typeof(PC_CommandDescriptionAttribute)) is PC_CommandDescriptionAttribute descAttribute)
                 {
                     Commands[methodNames.IndexOf(attribute.commandName)].commandDescription = descAttribute.commandDescription;
                 }
 
-                if (Attribute.GetCustomAttribute(methodFields[i], typeof(PlatinumCommandAliasesAttribute)) is PlatinumCommandAliasesAttribute aliasAttribute)
+                if (Attribute.GetCustomAttribute(methodFields[i], typeof(PC_CommandAliasesAttribute)) is PC_CommandAliasesAttribute aliasAttribute)
                 {
                     Commands[methodNames.IndexOf(attribute.commandName)].AddAliases(aliasAttribute.aliases);
                     cachedAliases += aliasAttribute.aliases.Length;
                 }
 
                 //Add a quick action
-                if (Attribute.GetCustomAttribute(methodFields[i], typeof(PlatinumCommandQuickActionAttribute)) is PlatinumCommandQuickActionAttribute quickActionAttribute)
+                if (Attribute.GetCustomAttribute(methodFields[i], typeof(PC_CommandQuickActionAttribute)) is PC_CommandQuickActionAttribute quickActionAttribute)
                 {
                     if (quickActionAttribute.quickActionName == null)
                         quickActionAttribute.quickActionName = methodFields[i].Name;
