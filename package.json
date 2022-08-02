@@ -4,8 +4,9 @@
   "displayName": "Coba Platinum Dev Tools",
   "description": "A robust set of debug tools that allows functionality such as an in-game debug console with commands, custom window menus, exposing variables, etc. for debugging a game.",
   "dependencies": {
-    "com.unity.inputsystem": "1.3.0"
- },
+    "com.unity.inputsystem": "1.3.0",
+    "com.unity.textmeshpro": "3.0.6"
+  },
   "author": {
     "name": "Coba Platinum",
     "email": "cobaplatinum@gmail.com",

@@ -1,0 +1,26 @@
+fileFormatVersion: 2
+guid: 9cd75015915585849a7e53c1e2c1a7ec
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Office Code Pro
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 0333b4d32f0fc9c4ea1d6978ea12b5dd, type: 3}
+  - {fileID: 12800000, guid: f64c0040c79659e40a10993c0c1f2523, type: 3}
+  - {fileID: 12800000, guid: 306cff9d1f637d9439fd451f5f98cc09, type: 3}
+  - {fileID: 12800000, guid: 58d9a77d78b35d54fb6384a053c3b4c5, type: 3}
+  - {fileID: 12800000, guid: 57dadba0a7d47ce428420a6759a7b634, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

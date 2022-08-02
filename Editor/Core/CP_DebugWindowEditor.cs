@@ -15,6 +15,7 @@ public class CP_DebugWindowEditor : Editor
     private CP_DebugWindow targetObject;
     private int currentTab;
     private bool showConsoleTests = false;
+    private bool showCanvasConsoleSettings = false;
 
     SerializedProperty m_ShowDebugWindow;
     SerializedProperty m_DebugWindowAlignment;
@@ -23,6 +24,17 @@ public class CP_DebugWindowEditor : Editor
     SerializedProperty m_MaxConsoleMessages;
     SerializedProperty m_UnityTag;
     SerializedProperty m_ConsoleTag;
+    SerializedProperty m_UseCanvasMode;
+
+    //New Debug Window
+    SerializedProperty m_DebugConsoleOutput;
+    SerializedProperty m_ExposedFieldsOutput;
+    SerializedProperty m_QuickActionReferenceObject;
+    SerializedProperty m_QuickActionObjectList;
+    SerializedProperty m_DebugWindowObject;
+    SerializedProperty m_CommandInputField;
+    SerializedProperty m_SuggestedCommandsBox;
+    SerializedProperty m_SuggestedCommandsText;
 
     GUIStyle headerStyle;
     Color headerColor = TextUtils.UnnormalizedColor(0, 168, 255);
@@ -38,6 +50,17 @@ public class CP_DebugWindowEditor : Editor
         m_UnityTag = serializedObject.FindProperty("UNITY_TAG");
         m_ConsoleTag = serializedObject.FindProperty("PLATINUM_CONSOLE_TAG");
         m_DebugWindowAlignment = serializedObject.FindProperty("alignment");
+        m_UseCanvasMode = serializedObject.FindProperty("useCanvasMode");
+
+        //New Console Window
+        m_DebugConsoleOutput = serializedObject.FindProperty("debugConsoleOutput");
+        m_ExposedFieldsOutput = serializedObject.FindProperty("exposedFieldsOutput");
+        m_QuickActionReferenceObject = serializedObject.FindProperty("quickActionReferenceObject");
+        m_QuickActionObjectList = serializedObject.FindProperty("quickActionObjectList");
+        m_DebugWindowObject = serializedObject.FindProperty("debugWindowObject");
+        m_CommandInputField = serializedObject.FindProperty("commandInputField");
+        m_SuggestedCommandsBox = serializedObject.FindProperty("suggestedCommandsBox");
+        m_SuggestedCommandsText = serializedObject.FindProperty("suggestedCommandsText");
     }
 
     public override void OnInspectorGUI()
@@ -127,6 +150,25 @@ public class CP_DebugWindowEditor : Editor
         GUIStyle style = EditorStyles.foldout;
         FontStyle previousStyle = style.fontStyle;
         style.fontStyle = FontStyle.Bold;
+        showCanvasConsoleSettings = EditorGUILayout.Foldout(showCanvasConsoleSettings, "Canvas Debug Console");
+        style.fontStyle = previousStyle;
+
+        if (showCanvasConsoleSettings)
+        {
+            EditorGUILayout.PropertyField(m_DebugWindowObject, new GUIContent("Debug Window"));
+            EditorGUILayout.PropertyField(m_DebugConsoleOutput, new GUIContent("Console Output Text"));
+            EditorGUILayout.PropertyField(m_CommandInputField, new GUIContent("Command Input Field"));
+            EditorGUILayout.PropertyField(m_SuggestedCommandsBox, new GUIContent("Suggested Commands Box"));
+            EditorGUILayout.PropertyField(m_SuggestedCommandsText, new GUIContent("Suggested Commands Text"));
+            EditorGUILayout.PropertyField(m_ExposedFieldsOutput, new GUIContent("Exposed Fields Text"));
+            EditorGUILayout.PropertyField(m_QuickActionReferenceObject, new GUIContent("Quick Actions Reference Object"));
+            EditorGUILayout.PropertyField(m_QuickActionObjectList, new GUIContent("Quick Actions List"));
+        }
+
+        EditorGUILayout.EndVertical();
+
+        EditorGUILayout.BeginVertical("box");
+        style.fontStyle = FontStyle.Bold;
         showConsoleTests = EditorGUILayout.Foldout(showConsoleTests, "Debug Console Tests");
         style.fontStyle = previousStyle;
 
@@ -186,6 +228,7 @@ public class CP_DebugWindowEditor : Editor
         EditorGUILayout.PropertyField(m_WindowRect, new GUIContent("Editor Window Rect"));
         EditorGUILayout.Space();
         EditorGUILayout.PropertyField(m_DebugWindowAlignment, new GUIContent("Editor Window Alignment"));
+        EditorGUILayout.PropertyField(m_UseCanvasMode, new GUIContent("Use Canvas Mode"));
         EditorGUILayout.EndVertical();
     }
 }
