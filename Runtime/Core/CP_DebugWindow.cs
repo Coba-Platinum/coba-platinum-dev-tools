@@ -39,6 +39,7 @@ namespace CobaPlatinum.DebugTools
 
         #endregion
 
+        [SerializeField] public bool debugModeEnabled = false;
         [SerializeField][ExposedField("Debug Window Showing")] public bool showDebugWindow = false;
         [SerializeField] private Rect windowRect = new Rect(20, 20, 800, 50);
         private Rect alignedWindowRect;
@@ -69,6 +70,7 @@ namespace CobaPlatinum.DebugTools
         [SerializeField] private int selectedSuggestion = 0;
 
         //New Debug Window
+        [SerializeField] private GameObject debugModeCanvas;
         [SerializeField] private GameObject debugWindowObject;
         [SerializeField] private TextMeshProUGUI debugConsoleOutput;
         [SerializeField] private TextMeshProUGUI exposedFieldsOutput;
@@ -130,10 +132,25 @@ namespace CobaPlatinum.DebugTools
 
         private void ToggleConsole()
         {
-            showDebugWindow = !showDebugWindow;
+            setShowDebugWindow(!showDebugWindow);
 
             if (showDebugWindow)
+            {
+                toggleDebugMode(true);
                 InitializeDebugWindow();
+            }
+        }
+
+        public void setShowDebugWindow(bool _showDebugWindow)
+        {
+            this.showDebugWindow = _showDebugWindow;
+        }
+
+        public void toggleDebugMode(bool _debugMode)
+        {
+            this.debugModeEnabled = _debugMode;
+
+            debugModeCanvas.SetActive(debugModeEnabled);
         }
 
         [PC_Command("ReCache-Commands")]
@@ -174,6 +191,11 @@ namespace CobaPlatinum.DebugTools
         public void Update()
         {
             if (kb.f12Key.wasPressedThisFrame)
+            {
+                toggleDebugMode(!debugModeEnabled);
+            }
+
+            if (kb.f8Key.wasPressedThisFrame)
             {
                 ToggleConsole();
             }
@@ -295,6 +317,11 @@ namespace CobaPlatinum.DebugTools
                     DrawDebugConsole();
                     break;
             }
+        }
+
+        public void setAutoScroll(bool _autoScroll)
+        {
+            autoScroll = _autoScroll;
         }
 
         public void hideDebugWindow()

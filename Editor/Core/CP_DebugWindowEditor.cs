@@ -27,6 +27,7 @@ public class CP_DebugWindowEditor : Editor
     SerializedProperty m_UseCanvasMode;
 
     //New Debug Window
+    SerializedProperty m_DebugModeCanvas;
     SerializedProperty m_DebugConsoleOutput;
     SerializedProperty m_ExposedFieldsOutput;
     SerializedProperty m_QuickActionReferenceObject;
@@ -53,6 +54,7 @@ public class CP_DebugWindowEditor : Editor
         m_UseCanvasMode = serializedObject.FindProperty("useCanvasMode");
 
         //New Console Window
+        m_DebugModeCanvas = serializedObject.FindProperty("debugModeCanvas");
         m_DebugConsoleOutput = serializedObject.FindProperty("debugConsoleOutput");
         m_ExposedFieldsOutput = serializedObject.FindProperty("exposedFieldsOutput");
         m_QuickActionReferenceObject = serializedObject.FindProperty("quickActionReferenceObject");
@@ -111,6 +113,14 @@ public class CP_DebugWindowEditor : Editor
         EditorGUILayout.BeginHorizontal("box");
         GUILayout.Label("DEBUG WINDOW", EditorStyles.largeLabel);
         EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginVertical("box");
+        GUILayout.Label("Debug Window Canvas", EditorStyles.boldLabel);
+
+        EditorGUILayout.PropertyField(m_DebugModeCanvas, new GUIContent("Debug Canvas"));
+        EditorGUILayout.LabelField("Current Tab Index", m_TabIndex.intValue.ToString());
+
+        EditorGUILayout.EndVertical();
 
         EditorGUILayout.BeginVertical("box");
         GUILayout.Label("Debug Window Info", EditorStyles.boldLabel);
