@@ -73,6 +73,7 @@ namespace CobaPlatinum.DebugTools
         [SerializeField] private GameObject debugModeCanvas;
         [SerializeField] private GameObject debugWindowObject;
         [SerializeField] private TextMeshProUGUI debugConsoleOutput;
+        [SerializeField] private ScrollRect debugConsoleScrollRect;
         [SerializeField] private TextMeshProUGUI exposedFieldsOutput;
         [SerializeField] private GameObject quickActionReferenceObject;
         [SerializeField] private GameObject quickActionObjectList;
@@ -102,6 +103,11 @@ namespace CobaPlatinum.DebugTools
         private void FixedUpdate()
         {
             CP_ExposedFields.UpdateCachedFieldValues();
+
+            if (autoScroll)
+            {
+                debugConsoleScrollRect.verticalNormalizedPosition = 0;
+            }
         }
 
         void InitializeDebugWindow()
@@ -243,41 +249,10 @@ namespace CobaPlatinum.DebugTools
             {
                 debugWindowObject.SetActive(false);
             }
-
-            /*if (Event.current.Equals(Event.KeyboardEvent("None")))
-            {
-                SendCommand();
-            }*/
         }
 
         private void DrawDebugWindow(int windowID)
         {
-            /*if (GUI.Button(new Rect(alignedWindowRect.width - 24, 5, 18, 18), ""))
-            {
-                showDebugWindow = false;
-            }
-
-            GUILayout.Space(8);
-
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Debug Console"))
-            {
-                tabIndex = 0;
-            }
-            if (GUILayout.Button("Exposed Variables"))
-            {
-                tabIndex = 1;
-            }
-            if (GUILayout.Button("Quick Actions"))
-            {
-                tabIndex = 2;
-            }
-            if (GUILayout.Button("Settings"))
-            {
-                tabIndex = 3;
-            }
-            GUILayout.EndHorizontal();*/
-
             switch (tabIndex)
             {
                 case 0:
@@ -290,7 +265,7 @@ namespace CobaPlatinum.DebugTools
                     DrawDebugSettings();
                     break;
                 default:
-                    DrawDebugConsole();
+                    //Do nothing
                     break;
             }
         }
@@ -314,7 +289,7 @@ namespace CobaPlatinum.DebugTools
                     DrawDebugSettings();
                     break;
                 default:
-                    DrawDebugConsole();
+                    //Do nothing
                     break;
             }
         }
@@ -341,44 +316,16 @@ namespace CobaPlatinum.DebugTools
 
         public void DrawDebugConsole()
         {
-            /*GUI.Label(new Rect(10, 60, 800, 20), "Debug Console: (Type \"commands\" to view a list of all added commands)");
-            autoScroll = GUI.Toggle(new Rect(alignedWindowRect.width - 110, 60, 100, 20), autoScroll, "Auto scroll");
-
-            Rect consoleRect = new Rect(10, 80, alignedWindowRect.width - 20, alignedWindowRect.height - 120);
-            Rect consoleViewRect = new Rect(consoleRect.x, consoleRect.y, consoleRect.width, 20 * consoleMessages.Count);
-
-            GUI.Box(new Rect(consoleRect.x, consoleRect.y, consoleRect.width - 20, consoleRect.height), "");
-
-            if (autoScroll)
-                consoleScrollPosition = new Vector2(0, consoleViewRect.height);
-
-            consoleScrollPosition = GUI.BeginScrollView(consoleRect, consoleScrollPosition, consoleViewRect, false, true, GUIStyle.none, GUI.skin.verticalScrollbar);*/
-
             int index = 0;
             debugConsoleOutput.text = "";
             foreach (string message in consoleMessages)
             {
-                //Old Debug Window
-                //Rect labelRect = new Rect(15, consoleViewRect.y + (20 * index), consoleViewRect.width, 20);
-                //GUI.Label(labelRect, message);
-
-                //New Debug Window
                 debugConsoleOutput.text += (message + "\n");
 
                 index++;
             }
 
             consoleInput = commandInputField.text;
-
-            /*GUI.EndScrollView();
-
-            GUI.SetNextControlName("DebugCommandField");
-            consoleInput = GUI.TextField(new Rect(10, alignedWindowRect.height - 31, alignedWindowRect.width - 190, 21), consoleInput);
-
-            if (GUI.Button(new Rect(alignedWindowRect.width - 170, alignedWindowRect.height - 31, 160, 21), "Send Command"))
-            {
-                SendCommand();
-            }*/
 
             if(consoleInput != null && !consoleInput.Equals(""))
                 DrawCommandSuggestions();
@@ -403,24 +350,17 @@ namespace CobaPlatinum.DebugTools
 
             if (suggestedCommands.Count > 0)
             {
-                //Rect commandSuggestionsRect = new Rect(10, alignedWindowRect.height - 40 - (20 * suggestedCommands.Count), alignedWindowRect.width - 190, (20 * suggestedCommands.Count));
-
-                //GUI.Box(new Rect(commandSuggestionsRect.x, commandSuggestionsRect.y, commandSuggestionsRect.width, commandSuggestionsRect.height), "");
-
                 suggestedCommandsBox.SetActive(true);
 
                 suggestedCommandsText.text = "";
                 for (int i = suggestedCommands.Count - 1; i >= 0; i--)
                 {
-                    //Rect labelRect = new Rect(15, commandSuggestionsRect.y - 20 + (20 * (suggestedCommands.Count - i)), commandSuggestionsRect.width, 20);
                     if (selectedSuggestion == i)
                     {
-                        //GUI.Label(labelRect, TextUtils.ColoredText(suggestedCommands[i].commandSignature, Color.green));
                         suggestedCommandsText.text += TextUtils.ColoredText(suggestedCommands[i].commandSignature, Color.green) + "\n";
                     }
                     else
                     {
-                        //GUI.Label(labelRect, suggestedCommands[i].commandSignature);
                         suggestedCommandsText.text += suggestedCommands[i].commandSignature + "\n";
                     }
                 }
@@ -443,25 +383,11 @@ namespace CobaPlatinum.DebugTools
 
         public void DrawExposedVariables()
         {
-            /*GUI.Label(new Rect(10, 60, 800, 20), "Exposed Variables:");
-
-            Rect scrollViewRect = new Rect(10, 80, alignedWindowRect.width - 20, alignedWindowRect.height - 120);
-            Rect scrollViewContentRect = new Rect(scrollViewRect.x, scrollViewRect.y, scrollViewRect.width, 20 * consoleMessages.Count);
-
-            GUI.Box(new Rect(scrollViewRect.x, scrollViewRect.y, scrollViewRect.width - 20, scrollViewRect.height), "");
-
-            fieldsScrollPosition = GUI.BeginScrollView(scrollViewRect, fieldsScrollPosition, scrollViewRect, false, true, GUIStyle.none, GUI.skin.verticalScrollbar);*/
-
             int index = 0;
 
             exposedFieldsOutput.text = "";
             foreach (string exposedObject in CP_ExposedFields.ExposedMemberObjects)
             {
-                //Old Debug Window
-                //Rect labelRect = new Rect(15, scrollViewContentRect.y + (20 * index), scrollViewContentRect.width, 20);
-                //GUI.Label(labelRect, $"[{TextUtils.ColoredText("GameObject", Color.green)} - {exposedObject}]:");
-
-                //New Debug Window
                 exposedFieldsOutput.text += ($"[{TextUtils.ColoredText("GameObject", Color.green)} - {exposedObject}]:" + "\n");
 
                 index++;
@@ -469,31 +395,15 @@ namespace CobaPlatinum.DebugTools
                 List<TrackedExposedField> trackedFields = CP_ExposedFields.GetTrackedFieldsFromObject(exposedObject);
                 foreach (TrackedExposedField field in trackedFields)
                 {
-                    //Old Debug Window
-                    //Rect labelFieldRect = new Rect(15, scrollViewContentRect.y + (20 * index), scrollViewContentRect.width, 20);
-                    //GUI.Label(labelFieldRect, $"    - [{TextUtils.ColoredText(field.fieldName, Color.cyan)}:{field.fieldType}]  Value: {TextUtils.ColoredText(field.fieldValue, Color.magenta)}");
-
-                    //New Debug Window
                     exposedFieldsOutput.text += ($" L [{ TextUtils.ColoredText(field.fieldName, Color.cyan)}:{ field.fieldType}]  Value: { TextUtils.ColoredText(field.fieldValue, Color.magenta)}" + "\n");
 
                     index++;
                 }
             }
-
-            //GUI.EndScrollView();
         }
 
         public void DrawQuickActions()
         {
-            /*GUI.Label(new Rect(10, 60, 800, 20), "Quick Actions:");
-
-            Rect scrollViewRect = new Rect(10, 80, alignedWindowRect.width - 20, alignedWindowRect.height - 120);
-            Rect scrollViewContentRect = new Rect(scrollViewRect.x, scrollViewRect.y, scrollViewRect.width, 20 * consoleMessages.Count);
-
-            GUI.Box(new Rect(scrollViewRect.x, scrollViewRect.y, scrollViewRect.width - 20, scrollViewRect.height), "");
-
-            fieldsScrollPosition = GUI.BeginScrollView(scrollViewRect, fieldsScrollPosition, scrollViewRect, false, true, GUIStyle.none, GUI.skin.verticalScrollbar);*/
-
             int index = 0;
 
             List<GameObject> oldQuickActionObjects = new List<GameObject>();
@@ -507,14 +417,6 @@ namespace CobaPlatinum.DebugTools
             quickActionReferenceObject.SetActive(false);
             foreach (PlatinumQuickAction quickAction in CP_ConsoleMethods.QuickActions)
             {
-                //Old Debug Window
-                /*Rect buttonRect = new Rect(15, scrollViewContentRect.y + (22 * index), scrollViewContentRect.width - 30, 20);
-                if(GUI.Button(buttonRect, quickAction.quickActionName))
-                {
-                    ExecuteCommand(quickAction.quickActionCommand);
-                }*/
-
-                //New Debug Window
                 GameObject quickActionObject = Instantiate(quickActionReferenceObject, quickActionObjectList.transform);
                 quickActionObject.name = quickAction.quickActionName;
                 quickActionObject.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = quickAction.quickActionName;
@@ -523,8 +425,6 @@ namespace CobaPlatinum.DebugTools
 
                 index++;
             }
-
-            //GUI.EndScrollView();
         }
 
         private void OnEnable()

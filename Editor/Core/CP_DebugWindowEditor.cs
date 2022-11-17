@@ -29,6 +29,7 @@ public class CP_DebugWindowEditor : Editor
     //New Debug Window
     SerializedProperty m_DebugModeCanvas;
     SerializedProperty m_DebugConsoleOutput;
+    SerializedProperty m_DebugConsoleScrollRect;
     SerializedProperty m_ExposedFieldsOutput;
     SerializedProperty m_QuickActionReferenceObject;
     SerializedProperty m_QuickActionObjectList;
@@ -56,6 +57,7 @@ public class CP_DebugWindowEditor : Editor
         //New Console Window
         m_DebugModeCanvas = serializedObject.FindProperty("debugModeCanvas");
         m_DebugConsoleOutput = serializedObject.FindProperty("debugConsoleOutput");
+        m_DebugConsoleScrollRect = serializedObject.FindProperty("debugConsoleScrollRect");
         m_ExposedFieldsOutput = serializedObject.FindProperty("exposedFieldsOutput");
         m_QuickActionReferenceObject = serializedObject.FindProperty("quickActionReferenceObject");
         m_QuickActionObjectList = serializedObject.FindProperty("quickActionObjectList");
@@ -167,6 +169,7 @@ public class CP_DebugWindowEditor : Editor
         {
             EditorGUILayout.PropertyField(m_DebugWindowObject, new GUIContent("Debug Window"));
             EditorGUILayout.PropertyField(m_DebugConsoleOutput, new GUIContent("Console Output Text"));
+            EditorGUILayout.PropertyField(m_DebugConsoleScrollRect, new GUIContent("Console Scroll Rect"));
             EditorGUILayout.PropertyField(m_CommandInputField, new GUIContent("Command Input Field"));
             EditorGUILayout.PropertyField(m_SuggestedCommandsBox, new GUIContent("Suggested Commands Box"));
             EditorGUILayout.PropertyField(m_SuggestedCommandsText, new GUIContent("Suggested Commands Text"));
