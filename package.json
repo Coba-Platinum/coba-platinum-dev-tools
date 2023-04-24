@@ -1,6 +1,6 @@
 {
   "name": "com.cobaplatinum.devtools",
-  "version": "0.8.1",
+  "version": "0.8.4",
   "displayName": "Coba Platinum Dev Tools",
   "description": "A robust set of debug tools that allows functionality such as an in-game debug console with commands, custom window menus, exposing variables, etc. for debugging a game.",
   "dependencies": {
