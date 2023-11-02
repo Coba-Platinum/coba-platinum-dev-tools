@@ -7,6 +7,7 @@ using UnityEngine;
 using CobaPlatinum.DebugTools.ExposedFields;
 using CobaPlatinum.DebugTools;
 using CobaPlatinum.TextUtilities;
+using System.Threading.Tasks;
 
 public class CP_ExposedFields
 {
@@ -20,14 +21,19 @@ public class CP_ExposedFields
         ReCacheFields();
     }
 
-    public void ReCacheFields()
+    public async void ReCacheFields()
+    {
+        await Task.Run(() => RecacheFieldsAsync());
+    }
+
+    public void RecacheFieldsAsync()
     {
         ExposedMembers = new List<ExposedFieldInfo>();
         TrackedFields = new List<TrackedExposedField>();
         ExposedMemberObjects = new List<string>();
 
         cachedExposedFields = 0;
-        
+
         Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
         foreach (Assembly assembly in assemblies)

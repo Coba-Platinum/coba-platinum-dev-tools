@@ -226,6 +226,7 @@ namespace CobaPlatinum.DebugTools
                 consoleInput = suggestedCommands[selectedSuggestion].commandName;
                 commandInputField.text = suggestedCommands[selectedSuggestion].commandName;
                 selectedSuggestion = 0;
+                commandInputField.caretPosition = commandInputField.text.Length;
             }
         }
 

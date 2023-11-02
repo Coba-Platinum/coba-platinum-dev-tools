@@ -7,6 +7,7 @@ using System.Reflection;
 using CobaPlatinum.DebugTools;
 using CobaPlatinum.DebugTools.Console;
 using CobaPlatinum.TextUtilities;
+using System.Threading.Tasks;
 
 public class CP_ConsoleMethods
 {
@@ -27,7 +28,14 @@ public class CP_ConsoleMethods
         return methodNames.Where(k => k.Contains(input)).ToArray();
     }
 
-    public void ReCacheMethods()
+    public async void ReCacheMethods()
+    {
+        MonoBehaviour[] sceneActive = UnityEngine.Object.FindObjectsOfType<MonoBehaviour>();
+
+        await Task.Run(() => ReCacheMethodsAsync(sceneActive));
+    }
+
+    public void ReCacheMethodsAsync(MonoBehaviour[] _sceneActive)
     {
         Commands = new List<PlatinumCommand>();
         QuickActions = new List<PlatinumQuickAction>();
@@ -37,9 +45,8 @@ public class CP_ConsoleMethods
         cachedAliases = 0;
         cachedQuickActions = 0;
 
-        MonoBehaviour[] sceneActive = UnityEngine.Object.FindObjectsOfType<MonoBehaviour>();
 
-        foreach (MonoBehaviour mono in sceneActive)
+        foreach (MonoBehaviour mono in _sceneActive)
         {
             AddObjectMethodsToTerminal(mono);
         }
