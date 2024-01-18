@@ -98,16 +98,21 @@ namespace CobaPlatinum.DebugTools
             InitializeDebugWindow();
 
             kb = InputSystem.GetDevice<Keyboard>();
+
+            InvokeRepeating("SlowUpdate", 1f, 1f);
         }
 
         private void FixedUpdate()
         {
-            CP_ExposedFields.UpdateCachedFieldValues();
-
             if (autoScroll)
             {
                 debugConsoleScrollRect.verticalNormalizedPosition = 0;
             }
+        }
+
+        private void SlowUpdate()
+        {
+            CP_ExposedFields.UpdateCachedFieldValues();
         }
 
         void InitializeDebugWindow()
