@@ -29,10 +29,12 @@ namespace CobaPlatinum.DebugTools
             if (Instance != null)
             {
                 Debug.LogWarning("More than one instance of PlatinumConsole found!");
+                Destroy(gameObject);
                 return;
             }
 
             Instance = this;
+            DontDestroyOnLoad(gameObject);
 
             Initialize();
         }
