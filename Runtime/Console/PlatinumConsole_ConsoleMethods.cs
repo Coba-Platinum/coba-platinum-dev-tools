@@ -5,11 +5,11 @@ using System.Linq;
 using System.Reflection;
 
 using CobaPlatinum.DebugTools;
-using CobaPlatinum.DebugTools.Console;
+using CobaPlatinum.DebugTools.PlatinumConsole;
 using CobaPlatinum.TextUtilities;
 using System.Threading.Tasks;
 
-public class CP_ConsoleMethods
+public class PlatinumConsole_ConsoleMethods
 {
     public static List<PlatinumCommand> Commands { get; private set; } = new List<PlatinumCommand>();
     public static List<PlatinumQuickAction> QuickActions { get; private set; } = new List<PlatinumQuickAction>();
@@ -18,7 +18,7 @@ public class CP_ConsoleMethods
     public static int cachedAliases = 0;
     public static int cachedQuickActions = 0;
 
-    public CP_ConsoleMethods()
+    public PlatinumConsole_ConsoleMethods()
     {
         ReCacheMethods();
     }
@@ -51,10 +51,10 @@ public class CP_ConsoleMethods
             AddObjectMethodsToTerminal(mono);
         }
 
-        CP_DebugWindow.Instance.LogConsoleMessage("CP Console methods cached. Total commands cached: " + TextUtils.ColoredText(Commands.Count, Color.green), LogType.Log, CP_DebugWindow.Instance.PLATINUM_CONSOLE_TAG);
-        CP_DebugWindow.Instance.LogConsoleMessage("CP Console method signatures cached. Total signatures cached: " + TextUtils.ColoredText(cachedSignatures, Color.green), LogType.Log, CP_DebugWindow.Instance.PLATINUM_CONSOLE_TAG);
-        CP_DebugWindow.Instance.LogConsoleMessage("CP Console aliases cached. Total aliases cached: " + TextUtils.ColoredText(cachedAliases, Color.green), LogType.Log, CP_DebugWindow.Instance.PLATINUM_CONSOLE_TAG);
-        CP_DebugWindow.Instance.LogConsoleMessage("CP Console quick actions cached. Total quick actions cached: " + TextUtils.ColoredText(cachedQuickActions, Color.green), LogType.Log, CP_DebugWindow.Instance.PLATINUM_CONSOLE_TAG);
+        PlatinumConsole_DebugWindow.Instance.LogConsoleMessage("CP Console methods cached. Total commands cached: " + TextUtils.ColoredText(Commands.Count, Color.green), LogType.Log, PlatinumConsole_DebugWindow.Instance.PLATINUM_CONSOLE_TAG);
+        PlatinumConsole_DebugWindow.Instance.LogConsoleMessage("CP Console method signatures cached. Total signatures cached: " + TextUtils.ColoredText(cachedSignatures, Color.green), LogType.Log, PlatinumConsole_DebugWindow.Instance.PLATINUM_CONSOLE_TAG);
+        PlatinumConsole_DebugWindow.Instance.LogConsoleMessage("CP Console aliases cached. Total aliases cached: " + TextUtils.ColoredText(cachedAliases, Color.green), LogType.Log, PlatinumConsole_DebugWindow.Instance.PLATINUM_CONSOLE_TAG);
+        PlatinumConsole_DebugWindow.Instance.LogConsoleMessage("CP Console quick actions cached. Total quick actions cached: " + TextUtils.ColoredText(cachedQuickActions, Color.green), LogType.Log, PlatinumConsole_DebugWindow.Instance.PLATINUM_CONSOLE_TAG);
     }
 
     public static void AddObjectMethodsToTerminal(MonoBehaviour mono)
@@ -68,7 +68,7 @@ public class CP_ConsoleMethods
         for (int i = 0; i < methodFields.Length; i++)
         {
             // if we detect any attribute print out the data.
-            if (Attribute.GetCustomAttribute(methodFields[i], typeof(PC_CommandAttribute)) is PC_CommandAttribute attribute)
+            if (Attribute.GetCustomAttribute(methodFields[i], typeof(PlatinumConsole_CommandAttribute)) is PlatinumConsole_CommandAttribute attribute)
             {
                 if(attribute.commandName == null)
                     attribute.commandName = methodFields[i].Name;
@@ -88,19 +88,19 @@ public class CP_ConsoleMethods
                     cachedSignatures++;
                 }
 
-                if (Attribute.GetCustomAttribute(methodFields[i], typeof(PC_CommandDescriptionAttribute)) is PC_CommandDescriptionAttribute descAttribute)
+                if (Attribute.GetCustomAttribute(methodFields[i], typeof(PlatinumConsole_CommandDescriptionAttribute)) is PlatinumConsole_CommandDescriptionAttribute descAttribute)
                 {
                     Commands[methodNames.IndexOf(attribute.commandName)].commandDescription = descAttribute.commandDescription;
                 }
 
-                if (Attribute.GetCustomAttribute(methodFields[i], typeof(PC_CommandAliasesAttribute)) is PC_CommandAliasesAttribute aliasAttribute)
+                if (Attribute.GetCustomAttribute(methodFields[i], typeof(PlatinumConsole_CommandAliasesAttribute)) is PlatinumConsole_CommandAliasesAttribute aliasAttribute)
                 {
                     Commands[methodNames.IndexOf(attribute.commandName)].AddAliases(aliasAttribute.aliases);
                     cachedAliases += aliasAttribute.aliases.Length;
                 }
 
                 //Add a quick action
-                if (Attribute.GetCustomAttribute(methodFields[i], typeof(PC_CommandQuickActionAttribute)) is PC_CommandQuickActionAttribute quickActionAttribute)
+                if (Attribute.GetCustomAttribute(methodFields[i], typeof(PlatinumConsole_CommandQuickActionAttribute)) is PlatinumConsole_CommandQuickActionAttribute quickActionAttribute)
                 {
                     if (quickActionAttribute.quickActionName == null)
                         quickActionAttribute.quickActionName = methodFields[i].Name;

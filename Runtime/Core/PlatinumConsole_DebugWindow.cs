@@ -8,21 +8,21 @@ using UnityEngine.InputSystem;
 using TMPro;
 using UnityEngine.UI;
 
-using CobaPlatinum.DebugTools.Console;
+using CobaPlatinum.DebugTools.PlatinumConsole;
 using CobaPlatinum.TextUtilities;
 using CobaPlatinum.DebugTools.ExposedFields;
-using CobaPlatinum.DebugTools.Console.DefaultCommands;
-using CobaPlatinum.DebugTools.Console.DefaultExposedFields;
+using CobaPlatinum.DebugTools.PlatinumConsole.DefaultCommands;
+using CobaPlatinum.DebugTools.PlatinumConsole.DefaultExposedFields;
 
 namespace CobaPlatinum.DebugTools
 {
-    [RequireComponent(typeof(CP_DefaultCommands))]
-    [RequireComponent(typeof(CP_DefaultExposedFields))]
-    public class CP_DebugWindow : MonoBehaviour
+    [RequireComponent(typeof(PlatinumConsole_DefaultCommands))]
+    [RequireComponent(typeof(PlatinumConsole_DefaultExposedFields))]
+    public class PlatinumConsole_DebugWindow : MonoBehaviour
     {
         #region Singleton
 
-        public static CP_DebugWindow Instance;
+        public static PlatinumConsole_DebugWindow Instance;
 
         private void Awake()
         {
@@ -65,8 +65,8 @@ namespace CobaPlatinum.DebugTools
         private Vector2 fieldsScrollPosition = Vector2.zero;
         private bool autoScroll = true;
 
-        [SerializeField] private CP_ConsoleMethods platinumConsoleMethods;
-        [SerializeField] private CP_ExposedFields exposedFields;
+        [SerializeField] private PlatinumConsole_ConsoleMethods platinumConsoleMethods;
+        [SerializeField] private PlatinumConsole_ExposedFields exposedFields;
 
         [SerializeField] private List<SuggestedCommand> suggestedCommands;
         [SerializeField] private int selectedSuggestion = 0;
@@ -91,8 +91,8 @@ namespace CobaPlatinum.DebugTools
         {
             DontDestroyOnLoad(this);
 
-            platinumConsoleMethods = new CP_ConsoleMethods();
-            exposedFields = new CP_ExposedFields();
+            platinumConsoleMethods = new PlatinumConsole_ConsoleMethods();
+            exposedFields = new PlatinumConsole_ExposedFields();
         }
 
         private void Start()
@@ -114,7 +114,7 @@ namespace CobaPlatinum.DebugTools
 
         private void SlowUpdate()
         {
-            CP_ExposedFields.UpdateCachedFieldValues();
+            PlatinumConsole_ExposedFields.UpdateCachedFieldValues();
         }
 
         void InitializeDebugWindow()
@@ -166,25 +166,25 @@ namespace CobaPlatinum.DebugTools
             debugModeCanvas.SetActive(debugModeEnabled);
         }
 
-        [PC_Command("ReCache-Commands")]
-        [PC_CommandDescription("Re-cache and regenerate all commands and quick actions for the debug console.")]
-        [PC_CommandQuickAction("Re-Cache Commands")]
+        [PlatinumConsole_Command("ReCache-Commands")]
+        [PlatinumConsole_CommandDescription("Re-cache and regenerate all commands and quick actions for the debug console.")]
+        [PlatinumConsole_CommandQuickAction("Re-Cache Commands")]
         public void ReCacheCommands()
         {
             platinumConsoleMethods.ReCacheMethods();
         }
 
-        [PC_Command("ReCache-Variables")]
-        [PC_CommandDescription("Re-cache all exposed variables for the debug console.")]
-        [PC_CommandQuickAction("Re-Cache Variables")]
+        [PlatinumConsole_Command("ReCache-Variables")]
+        [PlatinumConsole_CommandDescription("Re-cache all exposed variables for the debug console.")]
+        [PlatinumConsole_CommandQuickAction("Re-Cache Variables")]
         public void ReCacheExposedVariables()
         {
             exposedFields.ReCacheFields();
         }
 
-        [PC_Command("ReCache-All")]
-        [PC_CommandDescription("Re-cache all exposed variables for the debug console and re-cache and regenerate all commands and quick actions for the debug console.")]
-        [PC_CommandQuickAction("Re-Cache All")]
+        [PlatinumConsole_Command("ReCache-All")]
+        [PlatinumConsole_CommandDescription("Re-cache all exposed variables for the debug console and re-cache and regenerate all commands and quick actions for the debug console.")]
+        [PlatinumConsole_CommandQuickAction("Re-Cache All")]
         public void ReCacheAll()
         {
             platinumConsoleMethods.ReCacheMethods();
@@ -345,7 +345,7 @@ namespace CobaPlatinum.DebugTools
         {
             suggestedCommands = new List<SuggestedCommand>();
 
-            foreach (PlatinumCommand command in CP_ConsoleMethods.Commands)
+            foreach (PlatinumCommand command in PlatinumConsole_ConsoleMethods.Commands)
             {
                 if (command.commandName.ToLower().StartsWith(consoleInput.ToLower()) && !command.commandName.ToLower().Equals(consoleInput.ToLower()))
                 {
@@ -394,13 +394,13 @@ namespace CobaPlatinum.DebugTools
             int index = 0;
 
             exposedFieldsOutput.text = "";
-            foreach (string exposedObject in CP_ExposedFields.ExposedMemberObjects)
+            foreach (string exposedObject in PlatinumConsole_ExposedFields.ExposedMemberObjects)
             {
                 exposedFieldsOutput.text += ($"[{TextUtils.ColoredText("GameObject", Color.green)} - {exposedObject}]:" + "\n");
 
                 index++;
 
-                List<TrackedExposedField> trackedFields = CP_ExposedFields.GetTrackedFieldsFromObject(exposedObject);
+                List<TrackedExposedField> trackedFields = PlatinumConsole_ExposedFields.GetTrackedFieldsFromObject(exposedObject);
                 foreach (TrackedExposedField field in trackedFields)
                 {
                     exposedFieldsOutput.text += ($" L [{ TextUtils.ColoredText(field.fieldName, Color.cyan)}:{ field.fieldType}]  Value: { TextUtils.ColoredText(field.fieldValue, Color.magenta)}" + "\n");
@@ -423,7 +423,7 @@ namespace CobaPlatinum.DebugTools
             }
 
             quickActionReferenceObject.SetActive(false);
-            foreach (PlatinumQuickAction quickAction in CP_ConsoleMethods.QuickActions)
+            foreach (PlatinumQuickAction quickAction in PlatinumConsole_ConsoleMethods.QuickActions)
             {
                 GameObject quickActionObject = Instantiate(quickActionReferenceObject, quickActionObjectList.transform);
                 quickActionObject.name = quickAction.quickActionName;
@@ -558,7 +558,7 @@ namespace CobaPlatinum.DebugTools
                 args = _command.Split(new char[] { ' ' }).ToList();
                 command = args[0].ToLower();
                 args.RemoveAt(0);
-                foreach (PlatinumCommand method in CP_ConsoleMethods.Commands)
+                foreach (PlatinumCommand method in PlatinumConsole_ConsoleMethods.Commands)
                 {
                     if (method.HasAlias(command))
                     {
@@ -628,13 +628,13 @@ namespace CobaPlatinum.DebugTools
             }
         }
 
-        [PC_Command("Commands", "Show a list of all possible commands.")]
+        [PlatinumConsole_Command("Commands", "Show a list of all possible commands.")]
         public void PrintCommandList()
         {
             LogTaglessConsoleMessage("------ Commands ------");
             LogTaglessConsoleMessage("{COMMAND FORMAT} - {COMMAND DESCRIPTION}  - Use \"help {command}\" for more info.");
 
-            foreach (var method in CP_ConsoleMethods.Commands)
+            foreach (var method in PlatinumConsole_ConsoleMethods.Commands)
             {
                 LogTaglessConsoleMessage(TextUtils.ColoredText("\"" + method.commandSignatures[0] + "\"", INPUT_COLOR) + $" - {method.commandDescription}");
                 string aliases = "";
@@ -653,15 +653,15 @@ namespace CobaPlatinum.DebugTools
             LogTaglessConsoleMessage("----------------------");
         }
 
-        [PC_Command("Clear", "Clear the debug console.")]
-        [PC_CommandQuickAction("Clear Console")]
+        [PlatinumConsole_Command("Clear", "Clear the debug console.")]
+        [PlatinumConsole_CommandQuickAction("Clear Console")]
         public void ClearConsole()
         {
             consoleMessages.Clear();
             LogConsoleMessage("Coba Platinum Console cleared!", LogType.Log, PLATINUM_CONSOLE_TAG);
         }
 
-        [PC_Command()]
+        [PlatinumConsole_Command()]
         public void Help()
         {
             LogTaglessConsoleMessage("----------------------");
@@ -672,10 +672,10 @@ namespace CobaPlatinum.DebugTools
             LogTaglessConsoleMessage("----------------------");
         }
 
-        [PC_Command("Help", "Learn more about a specific command.")]
+        [PlatinumConsole_Command("Help", "Learn more about a specific command.")]
         public void Help(string command)
         {
-            foreach (var method in CP_ConsoleMethods.Commands)
+            foreach (var method in PlatinumConsole_ConsoleMethods.Commands)
             {
                 if (method.HasAlias(command))
                 {

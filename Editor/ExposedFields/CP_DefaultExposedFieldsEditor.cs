@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-using CobaPlatinum.DebugTools.Console.DefaultExposedFields;
+using CobaPlatinum.DebugTools.PlatinumConsole.DefaultExposedFields;
 using CobaPlatinum.TextUtilities;
 
-[CustomEditor(typeof(CP_DefaultExposedFields))]
+[CustomEditor(typeof(PlatinumConsole_DefaultExposedFields))]
 public class CP_DefaultExposedFieldsEditor : Editor
 {
     GUIStyle headerStyle;

@@ -5,14 +5,14 @@ using UnityEditor;
 using UnityEditorInternal;
 
 using CobaPlatinum.DebugTools;
-using CobaPlatinum.DebugTools.Console.DefaultCommands;
-using CobaPlatinum.DebugTools.Console.DefaultExposedFields;
+using CobaPlatinum.DebugTools.PlatinumConsole.DefaultCommands;
+using CobaPlatinum.DebugTools.PlatinumConsole.DefaultExposedFields;
 using CobaPlatinum.TextUtilities;
 
-[CustomEditor(typeof(CP_DebugWindow))]
-public class CP_DebugWindowEditor : Editor
+[CustomEditor(typeof(PlatinumConsole_DebugWindow))]
+public class PlatinumConsole_DebugWindowEditor : Editor
 {
-    private CP_DebugWindow targetObject;
+    private PlatinumConsole_DebugWindow targetObject;
     private int currentTab;
     private bool showConsoleTests = false;
     private bool showCanvasConsoleSettings = false;
@@ -43,7 +43,7 @@ public class CP_DebugWindowEditor : Editor
 
     private void OnEnable()
     {
-        targetObject = (CP_DebugWindow)target;
+        targetObject = (PlatinumConsole_DebugWindow)target;
 
         m_ShowDebugWindow = serializedObject.FindProperty("showDebugWindow");
         m_TabIndex = serializedObject.FindProperty("tabIndex");
@@ -206,15 +206,15 @@ public class CP_DebugWindowEditor : Editor
 
             if (GUILayout.Button("Send Test Unity Log"))
             {
-                CP_DebugWindow.Log(this, "This is a test CP Console Log!");
+                PlatinumConsole_DebugWindow.Log(this, "This is a test CP Console Log!");
             }
             if (GUILayout.Button("Send Test Unity Warning"))
             {
-                CP_DebugWindow.LogWarning(this, "This is a test CP Console Warning!");
+                PlatinumConsole_DebugWindow.LogWarning(this, "This is a test CP Console Warning!");
             }
             if (GUILayout.Button("Send Test Unity Error"))
             {
-                CP_DebugWindow.LogError(this, "This is a test CP Console Error!");
+                PlatinumConsole_DebugWindow.LogError(this, "This is a test CP Console Error!");
             }
 
             EditorGUILayout.Space();

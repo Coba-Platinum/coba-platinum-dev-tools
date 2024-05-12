@@ -1,11 +1,9 @@
 using CobaPlatinum.DebugTools.ExposedFields;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace CobaPlatinum.DebugTools.Console.DefaultExposedFields
+namespace CobaPlatinum.DebugTools.PlatinumConsole.DefaultExposedFields
 {
-    public class CP_DefaultExposedFields : MonoBehaviour
+    public class PlatinumConsole_DefaultExposedFields : MonoBehaviour
     {
         [ExposedField]
         public float timeScale;

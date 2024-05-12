@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace CobaPlatinum.PackageForge
 {
-    public class CP_PackageForge : EditorWindow
+    public class CobaPlatinum_PackageForge : EditorWindow
     {
         GUIStyle headerStyle;
         Color headerColor = TextUtils.UnnormalizedColor(0, 168, 255);
@@ -28,8 +28,8 @@ namespace CobaPlatinum.PackageForge
         [MenuItem("Coba Platinum/Package Forge")]
         public static void ShowWindow()
         {
-            CP_PackageForge window = GetWindow<CP_PackageForge>();
-            window.titleContent = new GUIContent("Package Forge", EditorGUIUtility.ObjectContent(CreateInstance<CP_PackageForge>(), typeof(CP_PackageForge)).image);
+            CobaPlatinum_PackageForge window = GetWindow<CobaPlatinum_PackageForge>();
+            window.titleContent = new GUIContent("Package Forge", EditorGUIUtility.ObjectContent(CreateInstance<CobaPlatinum_PackageForge>(), typeof(CobaPlatinum_PackageForge)).image);
         }
 
         private void Awake()
@@ -135,7 +135,7 @@ namespace CobaPlatinum.PackageForge
                 else
                     packageBuildData.autoIncrement = false;
 
-                CP_BuildVersionProcessor.autoIncrement = packageBuildData.autoIncrement;
+                CobaPlatinum_BuildVersionProcessor.autoIncrement = packageBuildData.autoIncrement;
 
                 if (!packageBuildData.autoIncrement)
                 {
@@ -156,12 +156,12 @@ namespace CobaPlatinum.PackageForge
                     packageBuildData.currentVersion[2] = EditorGUILayout.IntField(packageBuildData.currentVersion[2]);
                     if (GUILayout.Button("Set Version"))
                     {
-                        CP_BuildVersionProcessor.SetVersion(packageBuildData.currentVersion);
+                        CobaPlatinum_BuildVersionProcessor.SetVersion(packageBuildData.currentVersion);
                     }
                 }
                 else
                 {
-                    packageBuildData.currentVersion = CP_BuildVersionProcessor.FindCurrentVersion();
+                    packageBuildData.currentVersion = CobaPlatinum_BuildVersionProcessor.FindCurrentVersion();
 
                     EditorGUILayout.IntField(packageBuildData.currentVersion[0]);
                     EditorGUILayout.IntField(packageBuildData.currentVersion[1]);
@@ -174,13 +174,13 @@ namespace CobaPlatinum.PackageForge
                 if (packageBuildData.autoIncrement)
                     packageBuildData.versionBuildLevel = (VersionBuildType)EditorGUILayout.EnumPopup("Version Build Level", packageBuildData.versionBuildLevel);
 
-                CP_BuildVersionProcessor.buildType = packageBuildData.versionBuildLevel;
+                CobaPlatinum_BuildVersionProcessor.buildType = packageBuildData.versionBuildLevel;
 
                 packageBuildData.versionDevStage = (VersionDevStage)EditorGUILayout.EnumPopup("Version Build Stage", packageBuildData.versionDevStage);
-                CP_BuildVersionProcessor.devStage = packageBuildData.versionDevStage;
+                CobaPlatinum_BuildVersionProcessor.devStage = packageBuildData.versionDevStage;
 
                 packageBuildData.isDevBuild = EditorGUILayout.Toggle("Version is DEV build", packageBuildData.isDevBuild);
-                CP_BuildVersionProcessor.devBuild = packageBuildData.isDevBuild;
+                CobaPlatinum_BuildVersionProcessor.devBuild = packageBuildData.isDevBuild;
 
                 EditorGUILayout.EndVertical();
             }

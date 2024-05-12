@@ -112,7 +112,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 254.16, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 508.32, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3958438672627550562
@@ -1337,7 +1337,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3958438672891410499}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 749479f395d3e954d92ba3d828e23f9d, type: 3}
+  m_Script: {fileID: 11500000, guid: 0f03a23e697b23340b999d84e7237280, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &3958438672891410509
@@ -1362,7 +1362,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3958438672891410499}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa7bfa676df988241a9df6111a222946, type: 3}
+  m_Script: {fileID: 11500000, guid: e7fb9def031b65f48b9e4ecde2944e52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   debugModeEnabled: 0
@@ -1372,7 +1372,7 @@ MonoBehaviour:
     x: 20
     y: 20
     width: 800
-    height: 500
+    height: 50
   tabIndex: 0
   alignment: 0
   maxConsoleMessages: 200
@@ -1380,7 +1380,7 @@ MonoBehaviour:
     tagLabel: UNITY
     tagColor: {r: 0.7058824, g: 0, b: 1, a: 1}
   PLATINUM_CONSOLE_TAG:
-    tagLabel: CONSOLE
+    tagLabel: PLATINUM CONSOLE
     tagColor: {r: 0, g: 0.64705884, b: 1, a: 1}
   selectedSuggestion: 0
   debugModeCanvas: {fileID: 3958438674306098409}
@@ -3813,7 +3813,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 2, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &3958438673499384019

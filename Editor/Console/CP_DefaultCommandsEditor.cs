@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-using CobaPlatinum.DebugTools.Console.DefaultCommands;
+using CobaPlatinum.DebugTools.PlatinumConsole.DefaultCommands;
 using CobaPlatinum.TextUtilities;
 
-[CustomEditor(typeof(CP_DefaultCommands))]
+[CustomEditor(typeof(PlatinumConsole_DefaultCommands))]
 public class CP_DefaultCommandsEditor : Editor
 {
     GUIStyle headerStyle;

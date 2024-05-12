@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace CobaPlatinum.Utilities.Versioning
 {
-    public class CP_BuildVersionProcessor : IPreprocessBuildWithReport
+    public class CobaPlatinum_BuildVersionProcessor : IPreprocessBuildWithReport
     {
         
 

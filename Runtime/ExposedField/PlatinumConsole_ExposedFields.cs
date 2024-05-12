@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
@@ -9,14 +8,14 @@ using CobaPlatinum.DebugTools;
 using CobaPlatinum.TextUtilities;
 using System.Threading.Tasks;
 
-public class CP_ExposedFields
+public class PlatinumConsole_ExposedFields
 {
     public static List<ExposedFieldInfo> ExposedMembers { get; private set; } = new List<ExposedFieldInfo>();
     public static List<TrackedExposedField> TrackedFields { get; private set; } = new List<TrackedExposedField>();
     public static List<string> ExposedMemberObjects { get; private set; } = new List<string>();
     public int cachedExposedFields;
 
-    public CP_ExposedFields()
+    public PlatinumConsole_ExposedFields()
     {
         ReCacheFields();
     }
@@ -59,14 +58,14 @@ public class CP_ExposedFields
             }
         }
 
-        CP_DebugWindow.Instance.LogConsoleMessage("CP Console exposed fields cached. Total exposed fields cached: " + TextUtils.ColoredText(cachedExposedFields, Color.green), LogType.Log, CP_DebugWindow.Instance.PLATINUM_CONSOLE_TAG);
+        PlatinumConsole_DebugWindow.Instance.LogConsoleMessage("Platinum Console exposed fields cached. Total exposed fields cached: " + TextUtils.ColoredText(cachedExposedFields, Color.green), LogType.Log, PlatinumConsole_DebugWindow.Instance.PLATINUM_CONSOLE_TAG);
     }
 
     public static void UpdateCachedFieldValues()
     {
         TrackedFields.Clear();
 
-        foreach (ExposedFieldInfo member in CP_ExposedFields.ExposedMembers)
+        foreach (ExposedFieldInfo member in PlatinumConsole_ExposedFields.ExposedMembers)
         {
             MemberInfo memberInfo = member.memberInfo;
             ExposedFieldAttribute attribute = member.exposedFieldAttribute;
@@ -107,7 +106,7 @@ public class CP_ExposedFields
     public static List<TrackedExposedField> GetTrackedFieldsFromObject(string _object)
     {
         List<TrackedExposedField> trackedFields = new List<TrackedExposedField>();
-        foreach (TrackedExposedField field in CP_ExposedFields.TrackedFields)
+        foreach (TrackedExposedField field in PlatinumConsole_ExposedFields.TrackedFields)
         {
             if (field.fieldObject.Equals(_object))
             {
@@ -156,6 +155,6 @@ public struct TrackedExposedField
         fieldValue = _fieldValue;
         fieldType = _fieldType;
 
-        CP_ExposedFields.AddExposedMemberObject(_fieldObject);
+        PlatinumConsole_ExposedFields.AddExposedMemberObject(_fieldObject);
     }
 }
