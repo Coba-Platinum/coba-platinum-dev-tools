@@ -216,11 +216,13 @@ namespace CobaPlatinum.DebugTools
             if (kb.upArrowKey.wasPressedThisFrame)
             {
                 selectedSuggestion++;
+                commandInputField.caretPosition = commandInputField.text.Length;
             }
 
             if (kb.downArrowKey.wasPressedThisFrame)
             {
                 selectedSuggestion--;
+                commandInputField.caretPosition = commandInputField.text.Length;
             }
 
             if (kb.enterKey.wasPressedThisFrame)

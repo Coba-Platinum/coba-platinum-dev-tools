@@ -19,6 +19,7 @@ namespace CobaPlatinum.DebugTools.PlatinumConsole
                 "Packages/com.cobaplatinum.devtools/Resources/UI Documents/PlatinumConsoleEditorWindow.uxml");
 
             VisualElement tree = visualTree.Instantiate();
+            tree.style.height = Length.Percent(100);
             root.Add(tree);
         }
     }

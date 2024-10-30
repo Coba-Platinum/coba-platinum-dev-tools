@@ -1306,7 +1306,7 @@ GameObject:
   - component: {fileID: 3958438672891410509}
   - component: {fileID: 3958438672891410498}
   m_Layer: 0
-  m_Name: CP_Debug Window
+  m_Name: CobaPlatinum_Debug Window
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
