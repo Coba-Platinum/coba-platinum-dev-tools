@@ -1,0 +1,24 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Packages/com.cobaplatinum.devtools/Resources/Style/PlatinumConsoleEditorStyles.uss?fileID=7433441132597879392&amp;guid=b48c385e072c66a47aa7a3f8f28dadd2&amp;type=3#PlatinumConsoleEditorStyles" />
+    <ui:VisualElement name="TitleBar">
+        <ui:Label text="Coba Platinum Debug Window" display-tooltip-when-elided="true" style="left: auto; background-color: rgb(0, 168, 255); -unity-font-style: bold; height: 21px; -unity-text-align: middle-center; color: rgb(255, 255, 255);" />
+        <uie:Toolbar style="width: auto;">
+            <uie:ToolbarButton text="Debug Console" display-tooltip-when-elided="true" name="DebugConsoleTab" enable-rich-text="true" style="width: 116px; -unity-text-align: middle-center; left: 0;" />
+            <uie:ToolbarButton text="Exposed Variables" display-tooltip-when-elided="true" name="ExposedVariablesTab" enable-rich-text="true" tabindex="1" style="width: 142px; -unity-text-align: middle-center; left: 0;" />
+            <uie:ToolbarButton text="Quick Actions" display-tooltip-when-elided="true" name="QuickActionsTab" enable-rich-text="true" tabindex="2" style="width: 103px; -unity-text-align: middle-center; left: 0;" />
+        </uie:Toolbar>
+    </ui:VisualElement>
+    <ui:VisualElement name="DebugConsolePage" style="display: flex; visibility: visible; top: 5px; height: 100%; justify-content: space-between; margin-bottom: 5px;">
+        <ui:GroupBox style="flex-direction: row; align-items: stretch; justify-content: space-between;">
+            <ui:Label text="Debug Console - Type &quot;commands&quot; to view a list of all added commands" display-tooltip-when-elided="true" style="left: 2px; right: 2px; -unity-text-align: middle-left;" />
+            <ui:Toggle label="Auto Scroll" value="false" style="width: 168px; justify-content: flex-start; margin-left: 3px; -unity-text-align: middle-left;" />
+        </ui:GroupBox>
+        <ui:ScrollView style="border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; border-top-left-radius: 0; border-bottom-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-left-color: rgb(43, 43, 43); border-right-color: rgb(43, 43, 43); border-top-color: rgb(43, 43, 43); border-bottom-color: rgb(43, 43, 43); flex-grow: 10000; flex-shrink: 0; -unity-background-scale-mode: stretch-to-fill; -unity-slice-left: 0; -unity-slice-top: 0; -unity-slice-right: 0; -unity-slice-bottom: 0; flex-basis: auto; height: auto; justify-content: flex-start; background-color: rgb(48, 48, 48); min-height: auto; max-height: none;">
+            <ui:Label text="Console Output" display-tooltip-when-elided="true" style="background-color: rgba(0, 0, 0, 0); margin-left: 0; margin-right: 0; padding-left: 10px; padding-right: 10px; margin-top: 5px; margin-bottom: 5px;" />
+        </ui:ScrollView>
+        <ui:GroupBox style="flex-direction: row; justify-content: space-between;">
+            <ui:TextField picking-mode="Ignore" value="filler text" text="Enter command" style="width: auto; flex-grow: 400;" />
+            <ui:Button text="Send Command" display-tooltip-when-elided="true" style="width: 159px; height: 27px;" />
+        </ui:GroupBox>
+    </ui:VisualElement>
+</ui:UXML>
