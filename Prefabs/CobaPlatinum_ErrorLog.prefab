@@ -195,7 +195,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Content: {fileID: 6559464391435341410}
-  m_Horizontal: 1
+  m_Horizontal: 0
   m_Vertical: 1
   m_MovementType: 2
   m_Elasticity: 0.1
@@ -322,8 +322,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.000061035156, y: -0.000045776367}
-  m_SizeDelta: {x: 0, y: 69.37}
+  m_AnchoredPosition: {x: -0.000061035156, y: -0.000015258789}
+  m_SizeDelta: {x: 0, y: 102.05}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2197883487219008235
 MonoBehaviour:
@@ -422,10 +422,10 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 25
+  m_AdditionalShaderChannelsFlag: 1
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1000
   m_TargetDisplay: 0
 --- !u!114 &3223500645594065528
 MonoBehaviour:
@@ -639,7 +639,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 2, y: -2}
-  m_SizeDelta: {x: 545.8608, y: 65.37}
+  m_SizeDelta: {x: 545.8608, y: 98.05}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &9042520045058770254
 CanvasRenderer:
@@ -669,11 +669,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Invalid editor window of type: CobaPlatinum.PackageForge.CobaPlatinum_PackageForge,
-    title: CobaPlatinum.PackageForge.CobaPlatinum_PackageForge
-
-    UnityEditor.EditorApplicationLayout:FinalizePlaymodeLayout
-    ()'
+  m_text: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Posuere mi dolor
+    volutpat magna montes sed at ultrices nascetur. Duis mollis inceptos turpis sit
+    magnis odio sapien metus viverra. Ac odio quam a massa habitasse venenatis tellus
+    curae mattis. Lorem elit blandit lorem egestas mi scelerisque venenatis elit
+    bibendum. Primis ornare cras class donec rhoncus lectus sollicitudin ipsum quisque.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e454ae1122f8d7d47a6735641a110c43, type: 2}
   m_sharedMaterial: {fileID: 5047667444344831644, guid: e454ae1122f8d7d47a6735641a110c43, type: 2}
@@ -1258,7 +1258,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2730169550870261126
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1276,7 +1276,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: -7.4896}
+  m_AnchoredPosition: {x: 0, y: -7.489601}
   m_SizeDelta: {x: 0, y: 7}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &3768279774386313933
@@ -1772,7 +1772,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -27.7}
-  m_SizeDelta: {x: -8.3932, y: 146.8044}
+  m_SizeDelta: {x: -8.3932, y: 153.4121}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &6880951454731117783
 CanvasRenderer:

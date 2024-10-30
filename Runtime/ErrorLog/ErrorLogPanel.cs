@@ -2,6 +2,7 @@ using CobaPlatinum.DebugTools.ErrorLog;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ErrorLogPanel : MonoBehaviour
 {
@@ -15,6 +16,8 @@ public class ErrorLogPanel : MonoBehaviour
     {
         errorMessageText.text = errorMessage;
         IncrementOccurrences();
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(errorMessageText.GetComponent<RectTransform>());
     }
 
     public void IncrementOccurrences()
