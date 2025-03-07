@@ -66,22 +66,22 @@ namespace CobaPlatinum.Utilities.Versioning
                     break;
             }
 
-            string date = DateTime.Now.ToString("d");
+            string date = DateTime.Now.ToString("MM.dd.yy");
             if(devBuild)
-                PlayerSettings.bundleVersion = string.Format("DEV {4} Version ({0}.{1}.{2}) - {3}", newVersion[0], newVersion[1], newVersion[2], date, devStage);
+                PlayerSettings.bundleVersion = string.Format("DEV {4} {0}.{1}.{2}-{3}", newVersion[0], newVersion[1], newVersion[2], date, devStage);
             else
-                PlayerSettings.bundleVersion = string.Format("{4} Version ({0}.{1}.{2}) - {3}", newVersion[0], newVersion[1], newVersion[2], date, devStage);
+                PlayerSettings.bundleVersion = string.Format("{4} {0}.{1}.{2}-{3}", newVersion[0], newVersion[1], newVersion[2], date, devStage);
         }
 
         public static void SetVersion(int[] version)
         {
             int[] newVersion = version;
 
-            string date = DateTime.Now.ToString("d");
+            string date = DateTime.Now.ToString("MM.dd.yy");
             if (devBuild)
-                PlayerSettings.bundleVersion = string.Format("DEV {4} Version ({0}.{1}.{2}) - {3}", newVersion[0], newVersion[1], newVersion[2], date, devStage);
+                PlayerSettings.bundleVersion = string.Format("DEV {4} {0}.{1}.{2}-{3}", newVersion[0], newVersion[1], newVersion[2], date, devStage);
             else
-                PlayerSettings.bundleVersion = string.Format("{4} Version ({0}.{1}.{2}) - {3}", newVersion[0], newVersion[1], newVersion[2], date, devStage);
+                PlayerSettings.bundleVersion = string.Format("{4} {0}.{1}.{2}-{3}", newVersion[0], newVersion[1], newVersion[2], date, devStage);
 
             EditorUtility.DisplayDialog("Build Version Set!", "The build version of the project has been set to: \n" + PlayerSettings.bundleVersion, "Ok");
         }
