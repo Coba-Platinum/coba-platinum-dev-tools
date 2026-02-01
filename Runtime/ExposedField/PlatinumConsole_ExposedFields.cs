@@ -79,7 +79,7 @@ public class PlatinumConsole_ExposedFields
 
                 if (memberInfo.ReflectedType.IsSubclassOf(typeof(UnityEngine.Object)))
                 {
-                    var instance_classes = GameObject.FindObjectsOfType(memberInfo.ReflectedType);
+                    var instance_classes = GameObject.FindObjectsByType(memberInfo.ReflectedType, FindObjectsSortMode.None);
                     if (instance_classes != null)
                     {
                         foreach (var instance_class in instance_classes)
