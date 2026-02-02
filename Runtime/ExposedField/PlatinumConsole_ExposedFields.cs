@@ -7,6 +7,7 @@ using CobaPlatinum.DebugTools.ExposedFields;
 using CobaPlatinum.DebugTools;
 using CobaPlatinum.TextUtilities;
 using System.Threading.Tasks;
+using System.Linq;
 
 public class PlatinumConsole_ExposedFields
 {
@@ -65,6 +66,10 @@ public class PlatinumConsole_ExposedFields
     {
         TrackedFields.Clear();
 
+        List<UnityEngine.Object> cachedGameObjects = new List<UnityEngine.Object>();
+
+        cachedGameObjects = GameObject.FindObjectsByType(typeof(MonoBehaviour), FindObjectsSortMode.None).ToList();
+
         foreach (ExposedFieldInfo member in PlatinumConsole_ExposedFields.ExposedMembers)
         {
             MemberInfo memberInfo = member.memberInfo;
@@ -79,19 +84,23 @@ public class PlatinumConsole_ExposedFields
 
                 if (memberInfo.ReflectedType.IsSubclassOf(typeof(UnityEngine.Object)))
                 {
-                    var instance_classes = GameObject.FindObjectsByType(memberInfo.ReflectedType, FindObjectsSortMode.None);
-                    if (instance_classes != null)
+                    //var instance_classes = GameObject.FindObjectsByType(memberInfo.ReflectedType, FindObjectsSortMode.None);
+                    if (cachedGameObjects != null)
                     {
-                        foreach (var instance_class in instance_classes)
+                        foreach (var cachedGameObject in cachedGameObjects)
                         {
-                            obj = field.GetValue(instance_class);
-
-                            if (obj != null)
+                            if (cachedGameObject.GetType() == memberInfo.ReflectedType)
                             {
-                                value = obj.ToString();
-                            }
+                                obj = field.GetValue(cachedGameObject);
 
-                            TrackedFields.Add(new TrackedExposedField(instance_class.name, member.exposedFieldAttribute.displayName, value, obj.GetType().Name));
+                                if (obj != null)
+                                {
+                                    value = obj.ToString();
+                                }
+
+                                TrackedFields.Add(new TrackedExposedField(cachedGameObject.name, member.exposedFieldAttribute.displayName, value, obj.GetType().Name));
+                                //cachedGameObjects.Remove(cachedGameObject);
+                            }
                         }
                     }
                 }
